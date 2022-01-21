@@ -1,0 +1,38 @@
+doctrine:
+    dbal:
+        override_url: true
+        url: '%env(resolve:DATABASE_URL)%'
+
+        # IMPORTANT: You MUST configure your server version,
+        # either here or in the DATABASE_URL env var (see .env file)
+        # server_version: '13'
+
+        types:
+            #email: App\Doctrine\Type\UserEmailType
+            token: App\Doctrine\Type\TokenType
+
+    orm:
+        auto_generate_proxy_classes: true
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+        auto_mapping: true
+        mappings:
+            App\Context\Category:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/Context/Category/Domain/Entity'
+                prefix: 'App\Context\Category\Domain\Entity'
+                alias: App
+
+            App\Context\Common:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/Context/Common/Domain/Entity'
+                prefix: 'App\Context\Common\Domain\Entity'
+                alias: App
+
+            App:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/Entity'
+                prefix: 'App\Entity'
+                alias: App

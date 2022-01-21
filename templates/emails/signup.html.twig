@@ -1,0 +1,10 @@
+{# templates/emails/signup.html.twig #}
+
+<h1>Добро пожаловать {{ email.toName }}</h1>
+
+<p>Вы зарегитсрировались как {{ email.toName }}</p>
+
+<p>
+    <a href={}>Перейдите по этой ссылке чтобы активировать Ваш аккаунт</a>
+    (эта ссылка активна до {{ expireTime|date('F jS') }})
+</p>
