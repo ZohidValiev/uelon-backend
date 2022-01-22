@@ -71,6 +71,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
             'input'  => 'App\Context\Common\Infostructure\Dto\UserFieldDto',
             'read'   => false,
         ],
+        'updateRole' => [
+            'method' => 'patch',
+            'path'   => 'users/{id}/role',
+            'input'  => 'App\Context\Common\Infostructure\Dto\UserFieldDto',
+            'read'   => false,
+        ],
     ],
     normalizationContext: [
         'groups' => ['u:read'],
@@ -83,6 +89,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class User implements UserInterface
 {
     public const ROLE_USER  = 'ROLE_USER';
+    public const ROLE_MODERATOR  = 'ROLE_MODERATOR';
     public const ROLE_ADMIN = 'ROLE_ADMIN';
 
     public const STATUS_DELETED  = 0;
@@ -208,17 +215,39 @@ class User implements UserInterface
    
     public function getRoles()
     {
-        $roles = $this->roles;
+        $roles = [...$this->roles];
         $roles[] = 'ROLE_GUEST';
-        //$roles[] = 'ROLE_ADMIN';
 
         return \array_unique($roles);
     }
 
-    public function setRoles(array $roles): self
+    public function setRole(string $role): self
     {
-        $this->roles = $roles;
-        return $this;
+        if ($role === self::ROLE_ADMIN) {
+            $this->roles = [
+                self::ROLE_USER,
+                self::ROLE_MODERATOR,
+                self::ROLE_ADMIN,
+            ];
+            return $this;
+        }
+        
+        if ($role === self::ROLE_MODERATOR) {
+            $this->roles = [
+                self::ROLE_USER,
+                self::ROLE_MODERATOR,
+            ];
+            return $this;
+        }
+        
+        if ($role === self::ROLE_USER) {
+            $this->roles = [
+                self::ROLE_USER,
+            ];
+            return $this;
+        }
+
+        throw new \DomainException("Роль {$role} не поддерживается.");
     }
 
     public function getPassword()
@@ -226,7 +255,7 @@ class User implements UserInterface
         return $this->password;
     }
 
-    public function setPassword(string $password)
+    public function setPassword(string $password): self
     {
         $this->password = $password;
         return $this;
@@ -235,11 +264,6 @@ class User implements UserInterface
     public function getStatus(): int
     {
         return $this->status;
-    }
-
-    public function getActivationToken(): Token
-    {
-        return $this->activationToken;
     }
 
     public function setStatus(int $status)
@@ -260,10 +284,15 @@ class User implements UserInterface
         return $this;
     }
 
-    public function isRoleAdmin(): bool
+    public function getActivationToken(): Token
     {
-        return \in_array(self::ROLE_ADMIN, $this->getRoles());
+        return $this->activationToken;
     }
+
+    // public function isRoleAdmin(): bool
+    // {
+    //     return \in_array(self::ROLE_ADMIN, $this->getRoles());
+    // }
 
     public function isInactive(): bool
     {
@@ -275,30 +304,30 @@ class User implements UserInterface
         return $this->status === self::STATUS_ACTIVE;
     }
 
-    public function setAsActive(): void
-    {
-        $this->status = self::STATUS_ACTIVE;
-    }
+    // public function setAsActive(): void
+    // {
+    //     $this->status = self::STATUS_ACTIVE;
+    // }
 
     public function isBlocked(): bool
     {
         return $this->status === self::STATUS_BLOCKED;
     }
 
-    public function setAsBlocked(): void
-    {
-        $this->status = self::STATUS_BLOCKED;
-    }
+    // public function setAsBlocked(): void
+    // {
+    //     $this->status = self::STATUS_BLOCKED;
+    // }
 
     public function isDeleted(): bool
     {
         return $this->status === self::STATUS_DELETED;
     }
 
-    public function setAsDeleted(): void
-    {
-        $this->status = self::STATUS_DELETED;
-    }
+    // public function setAsDeleted(): void
+    // {
+    //     $this->status = self::STATUS_DELETED;
+    // }
 
     public function getSalt()
     {}
@@ -317,7 +346,7 @@ class User implements UserInterface
     }
 
     #[Groups(['u:read'])]
-    public function createTimeFormated() 
+    public function getCreateTimeFormated() 
     {
         return $this->createTime->format("d.m.Y H:i");
     }
@@ -327,21 +356,21 @@ class User implements UserInterface
         return $this->updateTime;
     }
 
-    public function activate(): void
-    {
-        if (!$this->isInactive()) {
-            throw new \DomainException('A user status must be inactive.');
-        }
+    // public function activate(): void
+    // {
+    //     if (!$this->isInactive()) {
+    //         throw new \DomainException('A user status must be inactive.');
+    //     }
 
-        if ($this->activationToken=== null) {
-            throw new \DomainException('Token is null.');
-        }
+    //     if ($this->activationToken=== null) {
+    //         throw new \DomainException('Token is null.');
+    //     }
 
-        if ($this->activationToken->isExpired()) {
-            throw new \DomainException('Token has been expired.');
-        }
+    //     if ($this->activationToken->isExpired()) {
+    //         throw new \DomainException('Token has been expired.');
+    //     }
 
-        $this->activationToken = null;
-        $this->setAsActive();
-    }
+    //     $this->activationToken = null;
+    //     $this->setAsActive();
+    // }
 }

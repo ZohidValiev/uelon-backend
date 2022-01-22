@@ -2,12 +2,14 @@
 namespace App\Context\Common\Infostructure\Constraint;
 
 use Symfony\Component\Validator\Constraints\Compound;
+use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Range;
 use Symfony\Component\Validator\Constraints\Sequentially;
+use Symfony\Component\Validator\Constraints\Regex;
+use Symfony\Component\Validator\Constraints\Type;
 
 #[\Attribute]
-class UserStatus extends Compound
+class UserRole extends Compound
 {
     protected function getConstraints(array $options): array
     {
@@ -19,11 +21,13 @@ class UserStatus extends Compound
                         allowNull: false,
                         message: "Выберите значение",
                     ),
-                    new Range(
-                        min: 0, 
-                        max: 3,
-                        invalidMessage: "Выберите числовое значение",
-                        notInRangeMessage: "Значение должно быть между {{ min }} и {{ max }}",
+                    new Type(
+                        type: "string",
+                        message: "Введите строковое значение",
+                    ),
+                    new Regex(
+                        pattern: "/^(ROLE_USER|ROLE_MODERATOR|ROLE_ADMIN)$/",
+                        message: "Выбрано неправильное значение",
                     ),
                 ]
             ]),

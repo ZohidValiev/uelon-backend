@@ -6,6 +6,7 @@ use App\Context\Common\Application\Command\User\Signup as AppSignup;
 use App\Context\Common\Application\Command\User\Activate as AppActivate;
 use App\Context\Common\Application\Command\User\UpdateNickname as AppUpdateNickname;
 use App\Context\Common\Application\Command\User\UpdateStatus as AppUpdateStatus;
+use App\Context\Common\Application\Command\User\UpdateRole as AppUpdateRole;
 use App\Context\Common\Domain\Entity\User;
 use App\Context\Common\Domain\Repository\UserRepositoryInterface;
 use App\Context\Common\Exception\NotFoundDomainException;
@@ -56,6 +57,10 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
             if ($data instanceof AppUpdateStatus\Command) {
                 return $this->_updateStatus($data);
             }
+
+            if ($data instanceof AppUpdateRole\Command) {
+                return $this->_updateRole($data);
+            }
         } catch (NotFoundDomainException $e) {
             throw new NotFoundHttpException($e->getMessage());
         } catch (\DomainException $e) {
@@ -71,6 +76,14 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
     public function remove($data, array $context = [])
     {
 
+    }
+
+    private function _updateRole(AppUpdateRole\Command $command): User
+    {
+        return (new AppUpdateRole\Handler(
+            $this->_em, 
+            $this->_repository
+        ))->handle($command);
     }
 
     private function _updateStatus(AppUpdateStatus\Command $command): User

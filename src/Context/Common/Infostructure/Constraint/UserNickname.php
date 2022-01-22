@@ -27,8 +27,8 @@ class UserNickname extends Compound
                     new Length(
                         min: 2, 
                         max: 30,
-                        minMessage: "Введите не менее {{ limit }}",
-                        maxMessage: "Введите не более {{ limit }}",
+                        minMessage: "Введите не менее {{ limit }} символов",
+                        maxMessage: "Введите не более {{ limit }} символов",
                     ),
                 ]
             ]),
