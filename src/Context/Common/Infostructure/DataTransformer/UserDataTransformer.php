@@ -4,13 +4,15 @@ namespace App\Context\Common\Infostructure\DataTransformer;
 use ApiPlatform\Core\DataTransformer\DataTransformerInterface;
 use ApiPlatform\Core\Validator\ValidatorInterface;
 use App\Context\Common\Domain\Entity\User;
+use App\Context\Common\Application\Command\User\Create\Command as CreateUserCommand;
 use App\Context\Common\Application\Command\User\UpdateNickname\Command as NicknameCommand;
 use App\Context\Common\Application\Command\User\UpdateStatus\Command as StatusCommand;
 use App\Context\Common\Application\Command\User\UpdateRole\Command as RoleCommand;
+use App\Context\Common\Infostructure\Dto\UserCreateDto;
 use App\Context\Common\Infostructure\Dto\UserFieldDto;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class UserFieldDataTransformer implements DataTransformerInterface
+class UserDataTransformer implements DataTransformerInterface
 {
     public function __construct(
         private RequestStack $_requestStack,
@@ -19,13 +21,30 @@ class UserFieldDataTransformer implements DataTransformerInterface
     {}
 
     /**
-     * @param UserFieldDto $object
+     * @param UserFieldDto|UserCreateDto $object
      */
     public function transform($object, string $to, array $context = [])
     {
         $request = $this->_requestStack->getCurrentRequest();
+        $operation = $context["collection_operation_name"] 
+            ?? $context["item_operation_name"] 
+            ?? null;
 
-        if ($context["item_operation_name"] === "updateNickname") {
+        if ($operation === "create") {
+            $object->nickname = \strip_tags($object->nickname);
+            $this->_validator->validate($object);
+
+            $command = new CreateUserCommand();
+            $command->email = $object->email;
+            $command->nickname = $object->nickname;
+            $command->password = $object->password;
+            $command->role = $object->role;
+            $command->status = $object->status;
+            $command->useVerification = $object->useVerification;
+            return $command;
+        }
+
+        if ($operation === "updateNickname") {
             $object->value = \strip_tags($object->value);
             $this->_validator->validate($object, ["groups" => ["user-nickname"]]);
 
@@ -35,7 +54,7 @@ class UserFieldDataTransformer implements DataTransformerInterface
             return $command;
         }
         
-        if ($context["item_operation_name"] === "updateStatus") {
+        if ($operation === "updateStatus") {
             $this->_validator->validate($object, ["groups" => ["user-status"]]);
 
             $command = new StatusCommand();
@@ -44,7 +63,7 @@ class UserFieldDataTransformer implements DataTransformerInterface
             return $command;
         }
 
-        if ($context["item_operation_name"] === "updateRole") {
+        if ($operation === "updateRole") {
             $this->_validator->validate($object, ["groups" => ["user-role"]]);
 
             $command = new RoleCommand();
@@ -56,13 +75,19 @@ class UserFieldDataTransformer implements DataTransformerInterface
 
     public function supportsTransformation($data, string $to, array $context = []): bool
     {
-        return \is_array($data)
-            && User::class === $to
-            && isset($context['item_operation_name'])
-            && \in_array($context['item_operation_name'], [
-                'updateNickname',
-                'updateStatus',
-                'updateRole',
-            ]);
+        if (!\is_array($data) && User::class !== $to) {
+            return false;
+        }
+
+        $operation = $context["collection_operation_name"] 
+            ?? $context["item_operation_name"] 
+            ?? null;
+
+        return \in_array($operation, [
+            'create',
+            'updateNickname',
+            'updateStatus',
+            'updateRole',
+        ]);
     }
 }

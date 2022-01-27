@@ -17,15 +17,20 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 #[ApiResource(
     attributes: [
-        'pagination_items_per_page' => 20,
+        'pagination_items_per_page' => 5,//20
     ],
     collectionOperations: [
         'signup' => [
             'method' => 'post',
-            'path'   => 'user/signup',
+            'path'   => 'users/signup',
             'input'  => 'App\Context\Common\Infostructure\Dto\SignupDto',
         ],
         'get',
+        'create' => [
+            'method' => 'post',
+            'path'   => 'users',
+            'input'  => 'App\Context\Common\Infostructure\Dto\UserCreateDto',
+        ],
     ],
     itemOperations: [
         'get',
@@ -153,14 +158,14 @@ class User implements UserInterface
     private DateTimeImmutable $updateTime;
 
 
-    public function __construct(UserEmail $email, array $roles, Token $activationToken)
-    {
-        $this->nickname = $email->getNickname();
-        $this->email    = $email->getValue();
-        $this->roles    = $roles;
-        $this->status   = self::STATUS_INACTIVE;
-        $this->activationToken = $activationToken;
-    }
+    // public function __construct(UserEmail $email, array $roles, Token $activationToken)
+    // {
+    //     $this->nickname = $email->getNickname();
+    //     $this->email    = $email->getValue();
+    //     $this->roles    = $roles;
+    //     $this->status   = self::STATUS_INACTIVE;
+    //     $this->activationToken = $activationToken;
+    // }
 
     public static function getRolesUser(): array
     {
@@ -211,6 +216,12 @@ class User implements UserInterface
     {
         // return $this->email->getValue();
         return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+        return $this;
     }
    
     public function getRoles()

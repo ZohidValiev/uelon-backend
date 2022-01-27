@@ -3,6 +3,7 @@ namespace App\Context\Common\Infostructure\DataPersister;
 
 use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use App\Context\Common\Application\Command\User\Signup as AppSignup;
+use App\Context\Common\Application\Command\User\Create as AppCreate;
 use App\Context\Common\Application\Command\User\Activate as AppActivate;
 use App\Context\Common\Application\Command\User\UpdateNickname as AppUpdateNickname;
 use App\Context\Common\Application\Command\User\UpdateStatus as AppUpdateStatus;
@@ -32,7 +33,10 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
     public function supports($data, array $context = []): bool
     {
         return $data instanceof AppSignup\Command
+            || $data instanceof AppCreate\Command
             || $data instanceof AppUpdateNickname\Command
+            || $data instanceof AppUpdateStatus\Command
+            || $data instanceof AppUpdateRole\Command
             || ($data instanceof User && isset($context['item_operation_name']));
     }
 
@@ -42,12 +46,16 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
     public function persist($data, array $context = [])
     {
         try {
-            if ($data instanceof AppSignup\Command) {
-                return $this->_signup($data);
-            }
-    
-            if ($context['item_operation_name'] === 'activate') {
-                return $this->_activate($data);
+            // if ($data instanceof AppSignup\Command) {
+            //     return $this->_signup($data);
+            // }
+
+            // if ($context['item_operation_name'] === 'activate') {
+            //     return $this->_activate($data);
+            // }
+
+            if ($data instanceof AppCreate\Command) {
+                return $this->_createUser($data);
             }
 
             if ($data instanceof AppUpdateNickname\Command) {
@@ -76,6 +84,15 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
     public function remove($data, array $context = [])
     {
 
+    }
+
+    private function _createUser(AppCreate\Command $command): User
+    {
+        return (new AppCreate\Handler(
+            $this->_em, 
+            $this->_passwordEncoder,
+            $this->_eventDispatcher,
+        ))->handle($command);
     }
 
     private function _updateRole(AppUpdateRole\Command $command): User
