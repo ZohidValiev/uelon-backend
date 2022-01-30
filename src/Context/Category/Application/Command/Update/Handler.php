@@ -1,6 +1,7 @@
 <?php
 namespace App\Context\Category\Application\Command\Update;
 
+use App\Context\Category\Application\Command\Create\Translation;
 use App\Context\Category\Domain\Entity\Category;
 use App\Context\Category\Domain\Repository\CategoryRepositoryInterface;
 use App\Context\Common\Exception\NotFoundDomainException;
@@ -12,9 +13,7 @@ class Handler
         private CategoryRepositoryInterface $_repository,
         private Manager $_em,
     )
-    {
-        
-    }
+    {}
 
     /**
      * @throws NotFoundDomainException
@@ -22,18 +21,24 @@ class Handler
      */
     public function handle(Command $command): Category
     {
-        $category = $this->_repository->getByIdWithTranslations($command->id);
+        $category = $this->_repository->getByIdWithTranslations($command->getId());
 
         if ($category == null) {
-            throw new NotFoundDomainException("Category by id = $command->id has not been found.");
+            throw new NotFoundDomainException("Category by id = {$command->getId()} has not been found.");
         }
 
         $category
-            ->setIcon($command->icon)
-            ->setIsActive($command->isActive);
+            ->setIcon($command->getIcon())
+            ->setIsActive($command->getIsActive());
 
-        foreach ($command->translations as $translation) {
-            $category->updateTranslation($translation->locale, $translation->title);
+        /**
+         * @var Translation $translation
+         */
+        foreach ($command->getTranslations() as $translation) {
+            $category->updateTranslation(
+                $translation->getLocale(), 
+                $translation->getTitle()
+            );
         }
 
         $this->_em->flush();

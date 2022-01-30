@@ -4,14 +4,34 @@ namespace App\Context\Category\Application\Command\Update;
 
 class Command 
 {
-    public int $id;
+    public function __construct(
+        // Category id
+        private int $id,
+        // Category icon
+        private string $icon,
+        // category isActive
+        private bool $isActive,
+        private array $translations,
+    )
+    {}
 
-    public string $icon;
+    public function getId(): int
+    {
+        return $this->id;
+    }
 
-    public bool $isActive;
+    public function getIcon(): string
+    {
+        return $this->icon;
+    }
 
-    /**
-     * @var Translation[]
-     */
-    public array $translations = [];
+    public function getIsActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function getTranslations(): array
+    {
+        return $this->translations;
+    }
 }

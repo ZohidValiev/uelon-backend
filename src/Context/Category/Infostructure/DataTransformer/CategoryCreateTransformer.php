@@ -24,24 +24,24 @@ class CategoryCreateTransformer implements DataTransformerInterface
     {
         $this->validator->validate($object);
 
-        $command = new Command();
-        $command->parentId = $object->parentId;
-        $command->icon = $object->icon;
-        $command->isActive = $object->isActive;
-        $command->translations = [];
-
         /**
          * @var CategoryTranslationCreateDto $translation
          */
+        $translations = [];
         foreach ($object->translations as $translation)
         {
-            $commandTranslation = new Translation();
-            $commandTranslation->locale = $translation->locale;
-            $commandTranslation->title = $translation->title;
-            $command->translations[] = $commandTranslation;
+            $translations[] = new Translation(
+                $translation->locale,
+                $translation->title
+            );
         }
 
-        return $command;
+        return new Command(
+            $object->parentId,
+            $object->icon,
+            $object->isActive,
+            $translations,
+        );
     }
 
     public function supportsTransformation($data, string $to, array $context = []): bool

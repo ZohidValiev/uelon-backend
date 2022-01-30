@@ -18,7 +18,7 @@ class CategoryCollectionDataProvider implements CollectionDataProviderInterface,
     public function supports(string $resourceClass, string $operationName = null, array $context = []): bool
     {
         return Category::class === $resourceClass 
-            && \in_array($operationName, ['roots', 'children', 'ancestors'], true);
+            && \in_array($operationName, ['roots', 'children', /*'ancestors'*/], true);
     }
 
     public function getCollection(string $resourceClass, string $operationName = null)
@@ -33,10 +33,10 @@ class CategoryCollectionDataProvider implements CollectionDataProviderInterface,
             return $this->repository->findChildren($rootId);
         }
 
-        if ($operationName === 'ancestors') {
-            $id = $this->requestStack
-                       ->getCurrentRequest()->attributes->get('id');
-            return $this->repository->findAncestors($id);
-        }
+        // if ($operationName === 'ancestors') {
+        //     $id = $this->requestStack
+        //                ->getCurrentRequest()->attributes->get('id');
+        //     return $this->repository->findAncestors($id);
+        // }
     }
 }

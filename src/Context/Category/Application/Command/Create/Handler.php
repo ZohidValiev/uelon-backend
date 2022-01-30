@@ -20,10 +20,15 @@ class Handler
                 'locale' => $translation->locale,
                 'title'  => $translation->title,
             ];
-        }, $command->translations);
+        }, $command->getTranslations());
 
         $service  = new CategoryCreateService($this->_repository);
-        $category = $service($command->icon, $command->isActive, $translations, $command->parentId);
+        $category = $service(
+            $command->getIcon(), 
+            $command->getIsActive(), 
+            $translations, 
+            $command->getParentId()
+        );
 
         $this->_em->persist($category);
         $this->_em->flush();

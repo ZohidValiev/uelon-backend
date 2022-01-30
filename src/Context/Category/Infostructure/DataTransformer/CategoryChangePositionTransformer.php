@@ -21,11 +21,10 @@ class CategoryChangePositionTransformer implements DataTransformerInterface
         
         $request = $this->_requestStack->getCurrentRequest();
 
-        $command = new Command();
-        $command->id = $request->attributes->get("id");
-        $command->position = $object->position;
-
-        return $command;
+        return new Command(
+            $request->attributes->get("id"),
+            $object->position,
+        );
     }
 
     public function supportsTransformation($data, string $to, array $context = []): bool

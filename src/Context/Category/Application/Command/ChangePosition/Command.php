@@ -4,13 +4,21 @@ namespace App\Context\Category\Application\Command\ChangePosition;
 
 class Command
 {
-    /**
-     * Category $id
-     */
-    public int $id;
+    public function __construct(
+        // Category id
+        private int $id, 
+        //Category position
+        private int $position,
+    )
+    {}
 
-    /**
-     * Category $position
-     */
-    public int $position;
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function getPosition(): int
+    {
+        return $this->id;
+    }
 }

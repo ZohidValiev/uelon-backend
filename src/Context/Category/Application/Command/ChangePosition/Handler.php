@@ -19,7 +19,7 @@ class Handler
 
         $category = $this->_em->transactional(function() use ($command, $repository) {
             $service = new CategoryChangePositionService($repository);
-            return $service($command->id, $command->position);
+            return $service($command->getId(), $command->getPosition());
         });
 
         return $category;

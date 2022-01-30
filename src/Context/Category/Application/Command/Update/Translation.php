@@ -4,13 +4,21 @@ namespace App\Context\Category\Application\Command\Update;
 
 class Translation
 {
-    /**
-     * A Language class code
-     */
-    public string $locale;
+    public function __construct(
+        // Translation locale
+        private string $locale,
+        // Translation title
+        private string $title,
+    )
+    {}
 
-    /**
-     * A translation title
-     */
-    public string $title;
+    public function getLocale(): string
+    {
+        return $this->locale;
+    }
+
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
 }

@@ -23,22 +23,21 @@ class CategoryUpdateTransformer implements DataTransformerInterface
     {
         $this->_validator->validate($object);
 
-        $request = $this->_requestStack->getCurrentRequest();
-        
-        $command = new Command();
-        $command->id       = $request->attributes->get('id');
-        $command->icon     = $object->icon;
-        $command->isActive = $object->isActive;
-        
+        $translations = [];
         foreach ($object->translations as $translation) {
-            $commandTranslation = new Translation();
-            $commandTranslation->locale = $translation->locale;
-            $commandTranslation->title  = $translation->title;
-            $command->translations[]    =  $commandTranslation;
+            $translations[] = new Translation(
+                $translation->locale,
+                $translation->title,
+            );
         }
 
-
-        return $command;
+        $request = $this->_requestStack->getCurrentRequest();
+        return new Command(
+            $request->attributes->get('id'),
+            $object->icon,
+            $object->isActive,
+            $translations,
+        );
     }
 
     public function supportsTransformation($data, string $to, array $context = []): bool
