@@ -6,11 +6,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[\Attribute()]
 class Email extends Assert\Compound
 {
-    protected function getConstraints(array $options): array
+    protected function getConstraints(array $options = []): array
     {
         return [
             new Assert\Sequentially([
-                "groups" => $options["groups"] ?? [],
+                ...$options,
                 "constraints" => [
                     new Assert\NotBlank(
                         allowNull: false,

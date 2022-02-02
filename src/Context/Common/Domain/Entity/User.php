@@ -34,6 +34,18 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ],
     itemOperations: [
         'get',
+        'signin' => [
+            'method' => 'patch',
+            'path'   => 'users/{id}/signin',
+            'input'  => 'App\Context\Common\Infostructure\Dto\SigninInputDto',
+            'output' => [
+                'class' => 'App\Context\Common\Infostructure\Dto\SigninOutputDto',
+                'groups' => ['u:read'],
+            ],
+            'deserialize' => false,
+            'validate' => false,
+            'write' => false,
+        ],
         'activate' => [
             'method' => 'patch',
             'path'   => 'users/{id}/activate/{token}',
@@ -108,7 +120,7 @@ class User implements UserInterface
      * @ORM\Column(type="integer", columnDefinition="INT UNSIGNED NOT NULL AUTO_INCREMENT")
      */
     #[Groups(['u:read'])]
-    private string $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(type="string")

@@ -31,4 +31,22 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
             'activationToken' => $token,
         ]);
     }
+
+    public function getByEmail(string $email): User
+    {
+        $user = $this->findByEmail($email);
+
+        if ($user === null) {
+            throw new \DomainException("User by email {$email} has not been found.");
+        }
+
+        return $user;
+    }
+
+    public function findByEmail(string $email): ?User
+    {   
+        return $this->findOneBy([
+            "email" => $email,
+        ]);
+    }
 }

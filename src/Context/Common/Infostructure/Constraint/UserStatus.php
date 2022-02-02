@@ -9,11 +9,11 @@ use Symfony\Component\Validator\Constraints\Sequentially;
 #[\Attribute]
 class UserStatus extends Compound
 {
-    protected function getConstraints(array $options): array
+    protected function getConstraints(array $options = []): array
     {
         return [
             new Sequentially([
-                "groups" => $options["groups"] ?? [],
+                ...$options,
                 "constraints" => [
                     new NotBlank(
                         allowNull: false,
