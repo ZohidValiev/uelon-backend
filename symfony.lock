@@ -296,6 +296,9 @@
             "./config/packages/test/monolog.yaml"
         ]
     },
+    "symfony/password-hasher": {
+        "version": "v5.4.3"
+    },
     "symfony/polyfill-intl-grapheme": {
         "version": "v1.23.0"
     },
