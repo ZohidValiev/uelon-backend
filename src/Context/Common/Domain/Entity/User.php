@@ -7,6 +7,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use DomainException;
+use Symfony\Component\Security\Core\User\LegacyPasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -103,7 +104,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     OrderFilter::class,
     properties: ['id' => 'DESC'],
 )]
-class User implements UserInterface
+class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
 {
     public const ROLE_USER  = 'ROLE_USER';
     public const ROLE_MODERATOR  = 'ROLE_MODERATOR';
@@ -261,7 +262,7 @@ class User implements UserInterface
         return $this;
     }
    
-    public function getRoles()
+    public function getRoles(): array
     {
         $roles = [...$this->roles];
         $roles[] = 'ROLE_GUEST';
@@ -298,7 +299,7 @@ class User implements UserInterface
         throw new \DomainException("Роль {$role} не поддерживается.");
     }
 
-    public function getPassword()
+    public function getPassword(): ?string
     {
         return $this->password;
     }
@@ -383,12 +384,12 @@ class User implements UserInterface
     //     $this->status = self::STATUS_DELETED;
     // }
 
-    public function getSalt()
+    public function getSalt(): ?string
     {
-        return "1234";
+        return null;
     }
 
-    public function getUserIdentifier()
+    public function getUserIdentifier(): string
     {
         return $this->email;
     }

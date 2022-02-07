@@ -1,5 +1,5 @@
 security:
-    encoders:
+    password_hashers:
         App\Context\Common\Domain\Entity\User:
             algorithm: auto
 
