@@ -123,13 +123,13 @@ class User implements UserInterface
     private ?int $id;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=50)
      */
     #[Groups(['u:read'])]
     private string $nickname;
     
     /**
-     * @ORM\Column(type="string", length=180, unique=true)
+     * @ORM\Column(type="string", length=100, unique=true)
      */
     // private UserEmail $email;
     #[Groups(['u:read'])]

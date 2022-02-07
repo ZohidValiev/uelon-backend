@@ -124,7 +124,7 @@ class Category
     private int $position;
 
     /**
-     * @ORM\Column(type="string", options={"default": ""})
+     * @ORM\Column(type="string", length=50, options={"default": ""})
      */
     #[Groups(['c:read'])]
     private string $icon;
