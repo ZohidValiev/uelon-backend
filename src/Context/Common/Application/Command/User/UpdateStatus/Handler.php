@@ -17,8 +17,8 @@ class Handler
     public function handle(Command $command): User
     {
         return $this->_em->transactional(function() use ($command) {
-            $user = $this->_repository->get($command->id);
-            $user->setStatus($command->status);
+            $user = $this->_repository->get($command->getId());
+            $user->setStatus($command->getStatus());
             return $user;
         });
     }

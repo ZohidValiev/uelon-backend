@@ -170,14 +170,39 @@ class User implements UserInterface
     private DateTimeImmutable $updateTime;
 
 
-    // public function __construct(UserEmail $email, array $roles, Token $activationToken)
-    // {
-    //     $this->nickname = $email->getNickname();
-    //     $this->email    = $email->getValue();
-    //     $this->roles    = $roles;
-    //     $this->status   = self::STATUS_INACTIVE;
-    //     $this->activationToken = $activationToken;
-    // }
+    public static function signup(
+        UserEmail $email, 
+        string $password,
+    ): self
+    {
+        $user = (new User())
+            ->setEmail($email->getValue())
+            ->setNickname($email->getNickname())
+            ->setRole(self::ROLE_USER)
+            ->setStatus(self::STATUS_INACTIVE)
+            ->setPassword($password)
+            ->setActivationToken(Token::generate(24 * 3600));
+
+        return $user;
+    }
+
+    public static function create(
+        string $email,
+        string $nickname,
+        string $password,
+        string $role,
+        int $status,
+    ): self
+    {
+        $user = (new User())
+            ->setEmail($email)
+            ->setNickname($nickname)
+            ->setPassword($password)
+            ->setRole($role)
+            ->setStatus($status);
+
+        return $user;
+    }
 
     public static function getRolesUser(): array
     {
@@ -310,6 +335,12 @@ class User implements UserInterface
     public function getActivationToken(): Token
     {
         return $this->activationToken;
+    }
+
+    private function setActivationToken(?Token $token): self
+    {
+        $this->activationToken = $token;
+        return $this;
     }
 
     // public function isRoleAdmin(): bool

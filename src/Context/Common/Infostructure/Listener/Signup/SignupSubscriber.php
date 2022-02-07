@@ -1,31 +1,38 @@
 <?php
 namespace App\Context\Common\Infostructure\Listener\Signup;
 
-use App\Context\Common\Application\Event\SignupCompletedDomainEvent;
+use App\Context\Common\Application\Event\SignupedDomainEvent;
 use App\Context\Common\Application\Event\UserEvents;
-use App\Context\Common\Infostructure\Email\UserSignupMessageSender;
+use App\Context\Common\Domain\Entity\User;
+use App\Context\Common\Infostructure\Email\Signup\Message;
+use App\Context\Common\Infostructure\Email\Signup\MessageSender;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class SignupSubscriber implements EventSubscriberInterface
 {
-    public function __construct(private UserSignupMessageSender $_sender)
+    public function __construct(private MessageSender $_sender)
     {}
 
     public static function getSubscribedEvents()
     {
         return [
-            UserEvents::EVENT_SIGNUP_COMPLETED => ['onSignupCompleted'],
+            UserEvents::EVENT_USER_SIGNUPED => ['onSignuped'],
         ];
     }
 
-    public function onSignupCompleted(SignupCompletedDomainEvent $event)
+    public function onSignuped(SignupedDomainEvent $event)
     {
-        $param = new Param();
-        $param->entityId = $event->getEntityId();
-        $param->email    = $event->getEmail();
-        $param->token    = $event->getToken();
-        $param->tokenExpireTime = $event->getTokenExpireTime();
-
-        $this->_sender->send($param);
+        /**
+         * @var User $user
+         */
+        $user = $event->getTarget();
+        $message = new Message(
+            id: $user->getId(),
+            email: $user->getEmail(),
+            nickname: $user->getNickname(),
+            token: $user->getActivationToken()->getValue(),
+            tokenExpireTime: $user->getActivationToken()->getExpireTime(),
+        );
+        $this->_sender->send($message);
     }
 }

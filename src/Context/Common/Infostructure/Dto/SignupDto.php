@@ -1,21 +1,19 @@
 <?php
 namespace App\Context\Common\Infostructure\Dto;
 
-use Symfony\Component\Validator\Constraints\Email;
-use Symfony\Component\Validator\Constraints\EqualTo;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
+use App\Context\Common\Infostructure\Constraint\Email;
+use App\Context\Common\Infostructure\Constraint\UserPassword;
+use App\Context\Common\Infostructure\Constraint\UserPasswordRepeat;
+
 
 class SignupDto
 {
-    #[NotBlank(allowNull: false)]
     #[Email()]
     public string $email;
 
-    #[NotBlank(allowNull: false)]
-    #[Length(min: 6)]
+    #[UserPassword()]
     public string $password;
 
-    #[EqualTo(propertyPath: 'password')]
+    #[UserPasswordRepeat()]
     public string $passwordRepeat;
 }

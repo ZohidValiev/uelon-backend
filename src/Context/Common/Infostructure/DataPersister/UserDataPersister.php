@@ -46,9 +46,9 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
     public function persist($data, array $context = [])
     {
         try {
-            // if ($data instanceof AppSignup\Command) {
-            //     return $this->_signup($data);
-            // }
+            if ($data instanceof AppSignup\Command) {
+                return $this->_signup($data);
+            }
 
             // if ($context['item_operation_name'] === 'activate') {
             //     return $this->_activate($data);

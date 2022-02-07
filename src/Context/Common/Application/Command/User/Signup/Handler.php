@@ -1,10 +1,8 @@
 <?php
 namespace App\Context\Common\Application\Command\User\Signup;
 
-use App\Context\Common\Application\Event\SignupCompletedDomainEvent;
+use App\Context\Common\Application\Event\SignupDomainEvent;
 use App\Context\Common\Application\Event\SignupedDomainEvent;
-use App\Context\Common\Application\Event\SignupStartedDomainEvent;
-use App\Context\Common\Application\Event\UserEvents;
 use App\Context\Common\Domain\Entity\Token;
 use App\Context\Common\Domain\Entity\User;
 use App\Context\Common\Domain\Entity\UserEmail;
@@ -23,58 +21,18 @@ class Handler
 
     public function handle(Command $command): User
     {
-        $this->_dispatchSignupStarted($command->email, $command->password);
-
-        $user = new User(
-            email: new UserEmail($command->email),
-            roles: User::getRolesUser(),
-            activationToken: Token::generate(3600 * 24)
+        $user = User::signup(
+            email: new UserEmail($command->getEmail()),
+            password: $this->_passwordEncoder->encodePassword(new User(), $command->getPassword()),
         );
-        $user->setPassword($this->_passwordEncoder->encodePassword($user, $command->password));
 
-        $this->_dispatchSignuped($user, $command->password);
+        $this->_eventDispatcher->dispatch(new SignupDomainEvent($user));
 
         $this->_em->persist($user);
         $this->_em->flush();
 
-        $this->_dispatchSignupCompleted($user, $command->password);
+        $this->_eventDispatcher->dispatch(new SignupedDomainEvent($user));
 
         return $user;
-    }
-
-    private function _dispatchSignupStarted(string $email, string $rawPassword): SignupStartedDomainEvent
-    {
-        return $this->_eventDispatcher->dispatch(
-            new SignupStartedDomainEvent(
-                UserEvents::EVENT_SIGNUP_STARTED,
-                $email,
-                $rawPassword,
-            ),
-            UserEvents::EVENT_SIGNUP_STARTED
-        );
-    }
-
-    private function _dispatchSignuped(User $user, string $rawPassword)
-    {
-        return $this->_eventDispatcher->dispatch(
-            new SignupedDomainEvent(
-                UserEvents::EVENT_SIGNUPED, 
-                $user, 
-                $rawPassword,
-            ),
-            UserEvents::EVENT_SIGNUPED
-        );
-    }
-
-    private function _dispatchSignupCompleted(User $user, string $rawPassword): SignupCompletedDomainEvent
-    {
-        return $this->_eventDispatcher->dispatch(
-            new SignupCompletedDomainEvent(
-                UserEvents::EVENT_SIGNUP_COMPLETED, 
-                $user,
-                $rawPassword,
-            ), 
-            UserEvents::EVENT_SIGNUP_COMPLETED
-        );
     }
 }

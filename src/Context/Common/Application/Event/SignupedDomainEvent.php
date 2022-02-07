@@ -6,28 +6,8 @@ use App\Util\EventDispatcher\DomainEvent;
 
 class SignupedDomainEvent extends DomainEvent
 {
-    protected string $rawPassword;
-
-
-    public function __construct(string $name, User $target, string $rawPassword)
+    public function __construct(User $target)
     {
-        parent::__construct($name, $target);
-
-        $this->rawPassword = $rawPassword;
-    }
-
-    public function getEntityId(): int
-    {
-        return $this->target->getId();
-    }
-
-    public function getToken(): string
-    {
-        return $this->target->getActivationToken()->getValue();
-    }
-
-    public function getRawPassword(): string
-    {
-        return $this->rawPassword;
+        parent::__construct(UserEvents::EVENT_USER_SIGNUPED, $target);
     }
 }

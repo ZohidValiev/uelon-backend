@@ -1,14 +1,12 @@
 <?php
-namespace App\Context\Common\Infostructure\Email;
+namespace App\Context\Common\Infostructure\Email\Signup;
 
-use App\Context\Common\Infostructure\Listener\Signup\Param;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Component\Mailer\Exception\TransportException;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
+use Throwable;
 
-class UserSignupMessageSender
+class MessageSender
 {
     public function __construct(
         private MailerInterface $_mailer,
@@ -16,21 +14,24 @@ class UserSignupMessageSender
     )
     {}
 
-    public function send(Param $param): void
+    public function send(Message $message): void
     {
+        $adminEmail = "admin@uelon.uz";
         $email = (new TemplatedEmail())
             ->subject('Активация аккаунта на uelon.uz')
-            ->to($param->email)
+            ->sender($adminEmail)
+            ->from($adminEmail)
+            ->to($message->getEmail())
             ->htmlTemplate('emails/signup.html.twig')
             ->context([
-                'entityId' => $param->entityId,
-                'token' => $param->token,
-                'expireTime' => $param->tokenExpireTime,
+                'entityId' => $message->getId(),
+                'token' => $message->getToken(),
+                'expireTime' => $message->getTokenExpireTime(),
             ]);
 
         try {
             $this->_mailer->send($email);
-        } catch (TransportExceptionInterface $e) {
+        } catch (Throwable $e) {
             $this->_logger->error('Signup email sending exception');
         }
     }

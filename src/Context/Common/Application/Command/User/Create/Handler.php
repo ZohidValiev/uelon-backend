@@ -20,35 +20,25 @@ class Handler
 
     public function handle(Command $command): User
     {
-        $user = new User();
-        $user->setEmail($command->email);
-        $user->setNickname($command->nickname);
-        $user->setPassword($this->_passwordEncoder->encodePassword($user, $command->password));
-        $user->setRole($command->role);
-        $user->setStatus($command->status);
-        $this->_em->persist($user);
+        $user = User::create(
+            email: $command->getEmail(),
+            nickname: $command->getNickname(),
+            password: $this->_passwordEncoder->encodePassword(new User(), $command->getPassword()),
+            role: $command->getRole(),
+            status: $command->getStatus(),
+        );
 
-        if ($command->useVerification) {
-            $this->_dispatchUserCreate($user);
+        if ($command->getUseVerification()) {
+            $this->_eventDispatcher->dispatch(new UserCreateDomainEvent($user));
         }
         
+        $this->_em->persist($user);
         $this->_em->flush();
 
-        if ($command->useVerification) {
-            $this->_dispatchUserCreated($user);
+        if ($command->getUseVerification()) {
+            $this->_eventDispatcher->dispatch(new UserCreatedDomainEvent($user));
         }
 
         return $user;
     }
-
-    private function _dispatchUserCreate(User $user) {
-        $event = new UserCreateDomainEvent($user);
-        $this->_eventDispatcher->dispatch($event, $event->getName());
-    }
-
-    private function _dispatchUserCreated(User $user) {
-        $event = new UserCreatedDomainEvent($user);
-        $this->_eventDispatcher->dispatch($event, $event->getName());
-    }
-
 }
