@@ -11,8 +11,8 @@ class EventDispatcher implements EventDispatcherInterface
     )
     {}
 
-    public function dispatch(object $event, ?string $eventName = null): object
+    public function dispatch(DomainEvent $event): object
     {
-        return $this->_eventDispatcher->dispatch($event, $eventName);
+        return $this->_eventDispatcher->dispatch($event, $event->getName());
     }
 }
