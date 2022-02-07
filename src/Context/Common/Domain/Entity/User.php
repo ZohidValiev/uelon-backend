@@ -384,8 +384,15 @@ class User implements UserInterface
     // }
 
     public function getSalt()
-    {}
+    {
+        return "1234";
+    }
 
+    public function getUserIdentifier()
+    {
+        return $this->email;
+    }
+    
     public function getUsername()
     {
         return $this->email;
