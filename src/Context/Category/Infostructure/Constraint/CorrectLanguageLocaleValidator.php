@@ -8,12 +8,9 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
 class CorrectLanguageLocaleValidator extends ConstraintValidator
 {
-    public const LANGUAGE_LOCALE_UZ = 'uz';
-    public const LANGUAGE_LOCALE_RU = 'ru';
-
     private const LANGUAGE_LOCALES = [
-        self::LANGUAGE_LOCALE_UZ,
-        self::LANGUAGE_LOCALE_RU,
+        "uz",
+        "ru",
     ];
 
     public function validate($value, Constraint $constraint)

@@ -12,12 +12,17 @@ class LanguageLocale extends Compound
     protected function getConstraints(array $options): array
     {
         return [
-            new Sequentially([
-                new NotBlank(allowNull: false),
-                new Type('string'),
-                new CorrectLanguageLocale(),
-                new ExistTranslationLocale(),
-            ]),
+            new Sequentially(
+                groups: [],
+                constraints: [
+                    new NotBlank(
+                        allowNull: false,
+                    ),
+                    new Type('string'),
+                    new CorrectLanguageLocale(),
+                    new ExistTranslationLocale(),
+                ],
+            ),
         ];
     }
 }
