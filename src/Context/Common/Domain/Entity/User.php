@@ -4,6 +4,7 @@ namespace App\Context\Common\Domain\Entity;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use App\Context\Common\Exception\TokenDomainException;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use DomainException;
@@ -421,21 +422,24 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
         return $this->updateTime;
     }
 
-    // public function activate(): void
-    // {
-    //     if (!$this->isInactive()) {
-    //         throw new \DomainException('A user status must be inactive.');
-    //     }
+    /**
+     * @throws DomainException|TokenDomainException
+     */
+    public function activate(): void
+    {
+        if (!$this->isInactive()) {
+            throw new DomainException('A user status must be inactive.');
+        }
 
-    //     if ($this->activationToken=== null) {
-    //         throw new \DomainException('Token is null.');
-    //     }
+        if ($this->activationToken=== null) {
+            throw new DomainException('Activation token must be not null.');
+        }
 
-    //     if ($this->activationToken->isExpired()) {
-    //         throw new \DomainException('Token has been expired.');
-    //     }
+        if ($this->activationToken->isExpired()) {
+            throw new TokenDomainException('Activation token has been expired.');
+        }
 
-    //     $this->activationToken = null;
-    //     $this->setAsActive();
-    // }
+        $this->activationToken = null;
+        $this->setStatus(self::STATUS_ACTIVE);
+    }
 }
