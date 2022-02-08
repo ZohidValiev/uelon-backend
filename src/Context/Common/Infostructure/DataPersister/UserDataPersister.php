@@ -13,7 +13,7 @@ use App\Context\Common\Domain\Repository\UserRepositoryInterface;
 use App\Context\Common\Exception\NotFoundDomainException;
 use App\Doctrine\Manager;
 use App\Util\EventDispatcher\EventDispatcherInterface;
-use App\Util\PasswordEncoder;
+use App\Util\PasswordHasher;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -21,7 +21,7 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
 {
     public function __construct(
         private Manager $_em,
-        private PasswordEncoder $_passwordEncoder,
+        private PasswordHasher $_passwordHasher,
         private UserRepositoryInterface $_repository,
         private EventDispatcherInterface $_eventDispatcher,
     )
@@ -90,7 +90,7 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
     {
         return (new AppCreate\Handler(
             $this->_em, 
-            $this->_passwordEncoder,
+            $this->_passwordHasher,
             $this->_eventDispatcher,
         ))->handle($command);
     }
@@ -123,7 +123,7 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
     {
         return (new AppSignup\Handler(
             $this->_em, 
-            $this->_passwordEncoder,
+            $this->_passwordHasher,
             $this->_eventDispatcher
         ))->handle($command);
     }
