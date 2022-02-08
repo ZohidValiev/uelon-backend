@@ -2,21 +2,27 @@
 namespace App\Context\Common\Domain\Entity;
 
 use App\Util\Random;
+use DateTimeImmutable;
+use UnexpectedValueException;
+use function substr;
+use function strpos;
+use function time;
 
 class Token
 {
+    private const DELIMITER = "_";
+
     private string $value;
+    private ?DateTimeImmutable $expireTime = null;
 
-    private ?int $_expireTime = null;
-
-    public function __construct(?string $token)
+    public function __construct(string $token)
     {
         $this->value = $token;
     }
 
     public static function generate(int $time): Token
     {
-        $token = Random::generateRandomString() . '_' . (\time() + $time);
+        $token = Random::generateRandomString() . self::DELIMITER . (time() + $time);
         return new Token($token);
     }
 
@@ -27,28 +33,27 @@ class Token
 
     public function isExpired(): bool
     {
-        $this->_parse();
-        return $this->_expireTime < \time();
+        return $this->getExpireTime()->getTimestamp() < time();
     }
 
     public function getExpireTime(): \DateTimeImmutable
     {
-        $this->_parse();
-        return (new \DateTimeImmutable())->setTimestamp($this->_expireTime);
+        if ($this->expireTime === null) {
+            $this->expireTime = (new DateTimeImmutable())
+                ->setTimestamp($this->_getExpireTimestamp($this->value));
+        }
+
+        return $this->expireTime;
     }
 
-    private function _parse(): void
+    private function _getExpireTimestamp(string $token): int
     {
-        if ($this->value === null || $this->_expireTime >= 0) {
-            return;
+        $expireTime = substr($token, strpos($token, self::DELIMITER) + 1);
+
+        if ($expireTime === "" || $expireTime === false) {
+            throw new UnexpectedValueException("Expiration time must be present");
         }
 
-        $expireTime = \substr($this->value, \strpos($this->value, '_') + 1);
-
-        if ($expireTime === '') {
-            throw new \UnexpectedValueException('An expiration time must be present');
-        }
-
-        $this->_expireTime = (int) $expireTime;
+        return (int)$expireTime;
     }
 }

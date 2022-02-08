@@ -11,6 +11,11 @@ interface UserRepositoryInterface
      */
     public function get($id, $lockMode = null, $lockVersion = null): User;
 
+    /**
+     * @throws NotFoundDomainException
+     */
+    public function getByActivationToken(string $token): User;
+
     public function findByActivationToken(string $token): ?User;
 
     /**

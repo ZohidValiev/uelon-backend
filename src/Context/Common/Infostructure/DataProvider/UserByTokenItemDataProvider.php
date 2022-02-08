@@ -28,8 +28,9 @@ class UserByTokenItemDataProvider implements DenormalizedIdentifiersAwareItemDat
 
     public function supports(string $resourceClass, string $operationName = null, array $context = []): bool
     {
-        return User::class === $resourceClass
-            && isset($context['item_operation_name']) 
-            && ($context['item_operation_name'] === 'activate');
+        return false;
+        // return User::class === $resourceClass
+        //     && isset($context['item_operation_name']) 
+        //     && ($context['item_operation_name'] === 'activate');
     }
 }

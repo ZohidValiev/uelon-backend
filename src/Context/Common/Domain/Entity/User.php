@@ -78,6 +78,8 @@ use function is_callable;
                     ],
                 ]
             ],
+            'input'  => 'App\Context\Common\Infostructure\Dto\EmptyContentDto',
+            'read' => false,
         ],
         'updateNickname' => [
             'method' => 'patch',
@@ -123,7 +125,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
      * @ORM\Column(type="integer", columnDefinition="INT UNSIGNED NOT NULL AUTO_INCREMENT")
      */
     #[Groups(['u:read'])]
-    private ?int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=50)
@@ -185,7 +187,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
             ->setRole(self::ROLE_USER)
             ->setStatus(self::STATUS_INACTIVE)
             ->setActivationToken(Token::generate(24 * 3600))
-            ->setPassword(is_callable($password) ? $password($user) : $password);
+            ->setPassword(is_callable($password) ? call_user_func($password, $user) : $password);
 
         return $user;
     }
@@ -204,7 +206,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
             ->setNickname($nickname)
             ->setRole($role)
             ->setStatus($status)
-            ->setPassword(is_callable($password) ? $password($user) : $password);
+            ->setPassword(is_callable($password) ? call_user_func($password, $user) : $password);
 
         return $user;
     }
@@ -238,7 +240,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
         $this->updateTime = new \DateTimeImmutable();
     }
 
-    public function getId():?int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -256,7 +258,6 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
 
     public function getEmail(): string
     {
-        // return $this->email->getValue();
         return $this->email;
     }
 
@@ -363,30 +364,15 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
         return $this->status === self::STATUS_ACTIVE;
     }
 
-    // public function setAsActive(): void
-    // {
-    //     $this->status = self::STATUS_ACTIVE;
-    // }
-
     public function isBlocked(): bool
     {
         return $this->status === self::STATUS_BLOCKED;
     }
 
-    // public function setAsBlocked(): void
-    // {
-    //     $this->status = self::STATUS_BLOCKED;
-    // }
-
     public function isDeleted(): bool
     {
         return $this->status === self::STATUS_DELETED;
     }
-
-    // public function setAsDeleted(): void
-    // {
-    //     $this->status = self::STATUS_DELETED;
-    // }
 
     public function getSalt(): ?string
     {
@@ -431,7 +417,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
             throw new DomainException('A user status must be inactive.');
         }
 
-        if ($this->activationToken=== null) {
+        if ($this->activationToken === null) {
             throw new DomainException('Activation token must be not null.');
         }
 
@@ -439,7 +425,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
             throw new TokenDomainException('Activation token has been expired.');
         }
 
-        $this->activationToken = null;
+        $this->setActivationToken(null);
         $this->setStatus(self::STATUS_ACTIVE);
     }
 }

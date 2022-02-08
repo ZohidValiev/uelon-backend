@@ -33,6 +33,7 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
     public function supports($data, array $context = []): bool
     {
         return $data instanceof AppSignup\Command
+            || $data instanceof AppActivate\Command
             || $data instanceof AppCreate\Command
             || $data instanceof AppUpdateNickname\Command
             || $data instanceof AppUpdateStatus\Command
@@ -50,9 +51,9 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
                 return $this->_signup($data);
             }
 
-            // if ($context['item_operation_name'] === 'activate') {
-            //     return $this->_activate($data);
-            // }
+            if ($data instanceof AppActivate\Command) {
+                return $this->_activate($data);
+            }
 
             if ($data instanceof AppCreate\Command) {
                 return $this->_createUser($data);
@@ -128,8 +129,11 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
         ))->handle($command);
     }
 
-    private function _activate(User $user): User
+    private function _activate(AppActivate\Command $command): User
     {
-        return (new AppActivate\Handler($this->_em))->handle($user);
+        return (new AppActivate\Handler(
+            $this->_em, 
+            $this->_repository
+        ))->handle($command);
     }
 }

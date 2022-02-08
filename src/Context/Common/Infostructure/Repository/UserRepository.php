@@ -19,7 +19,18 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
         $user = $this->find($id, $lockMode, $lockVersion);
 
         if ($user == null) {
-            throw new NotFoundDomainException("User with id = $id has not been found.");
+            throw new NotFoundDomainException("User by id = $id has not been found.");
+        }
+
+        return $user;
+    }
+
+    public function getByActivationToken(string $token): User
+    {
+        $user = $this->findByActivationToken($token);
+
+        if ($user == null) {
+            throw new NotFoundDomainException("User has not been found.");
         }
 
         return $user;
