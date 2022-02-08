@@ -3,18 +3,17 @@ namespace App\Context\Common\Application\Command\User\Signup;
 
 use App\Context\Common\Application\Event\SignupDomainEvent;
 use App\Context\Common\Application\Event\SignupedDomainEvent;
-use App\Context\Common\Domain\Entity\Token;
 use App\Context\Common\Domain\Entity\User;
 use App\Context\Common\Domain\Entity\UserEmail;
 use App\Doctrine\Manager;
 use App\Util\EventDispatcher\EventDispatcherInterface;
-use App\Util\PasswordEncoder;
+use App\Util\PasswordHasher;
 
 class Handler
 {
     public function __construct(
         private Manager $_em,
-        private PasswordEncoder $_passwordEncoder,
+        private PasswordHasher $_passwordHasher,
         private EventDispatcherInterface $_eventDispatcher,
     )
     {}
@@ -23,7 +22,9 @@ class Handler
     {
         $user = User::signup(
             email: new UserEmail($command->getEmail()),
-            password: $this->_passwordEncoder->encodePassword(new User(), $command->getPassword()),
+            password: function(User $user) use ($command) {
+                return $this->_passwordHasher->hashPassword($user, $command->getPassword());
+            },
         );
 
         $this->_eventDispatcher->dispatch(new SignupDomainEvent($user));

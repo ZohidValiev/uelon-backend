@@ -10,6 +10,7 @@ use DomainException;
 use Symfony\Component\Security\Core\User\LegacyPasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use function is_callable;
 
 /**
  * @ORM\Entity(repositoryClass="App\Context\Common\Infostructure\Repository\UserRepository")
@@ -173,16 +174,17 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
 
     public static function signup(
         UserEmail $email, 
-        string $password,
+        string|callable $password,
     ): self
     {
-        $user = (new User())
+        $user = new User();
+        $user
             ->setEmail($email->getValue())
             ->setNickname($email->getNickname())
             ->setRole(self::ROLE_USER)
             ->setStatus(self::STATUS_INACTIVE)
-            ->setPassword($password)
-            ->setActivationToken(Token::generate(24 * 3600));
+            ->setActivationToken(Token::generate(24 * 3600))
+            ->setPassword(is_callable($password) ? $password($user) : $password);
 
         return $user;
     }
@@ -190,17 +192,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
     public static function create(
         string $email,
         string $nickname,
-        string $password,
+        string|callable $password,
         string $role,
         int $status,
     ): self
     {
-        $user = (new User())
+        $user = new User();
+        $user
             ->setEmail($email)
             ->setNickname($nickname)
-            ->setPassword($password)
             ->setRole($role)
-            ->setStatus($status);
+            ->setStatus($status)
+            ->setPassword(is_callable($password) ? $password($user) : $password);
 
         return $user;
     }

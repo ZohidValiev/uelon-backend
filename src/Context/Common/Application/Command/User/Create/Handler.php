@@ -7,13 +7,13 @@ use App\Context\Common\Domain\Entity\User;
 use App\Doctrine\Manager;
 use App\Context\Common\Domain\Repository\UserRepositoryInterface;
 use App\Util\EventDispatcher\EventDispatcherInterface;
-use App\Util\PasswordEncoder;
+use App\Util\PasswordHasher;
 
 class Handler
 {
     public function __construct(
         private Manager $_em, 
-        private PasswordEncoder $_passwordEncoder,
+        private PasswordHasher $_passwordHasher,
         private EventDispatcherInterface $_eventDispatcher,
     )
     {}
@@ -23,9 +23,11 @@ class Handler
         $user = User::create(
             email: $command->getEmail(),
             nickname: $command->getNickname(),
-            password: $this->_passwordEncoder->encodePassword(new User(), $command->getPassword()),
             role: $command->getRole(),
             status: $command->getStatus(),
+            password: function(User $user) use ($command) {
+                return $this->_passwordHasher->hashPassword($user, $command->getPassword());
+            },
         );
 
         if ($command->getUseVerification()) {
