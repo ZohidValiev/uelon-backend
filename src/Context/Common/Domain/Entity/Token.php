@@ -20,7 +20,7 @@ class Token
         $this->value = $token;
     }
 
-    public static function generate(int $time): Token
+    public static function generate(int $time = 24 * 3600): Token
     {
         $token = Random::generateRandomString() . self::DELIMITER . (time() + $time);
         return new Token($token);
