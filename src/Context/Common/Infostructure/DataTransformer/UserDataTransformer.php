@@ -6,6 +6,7 @@ use ApiPlatform\Core\Validator\ValidatorInterface;
 use App\Context\Common\Domain\Entity\User;
 use App\Context\Common\Application\Command\User\Signup\Command as SignupCommand;
 use App\Context\Common\Application\Command\User\Activate\Command as ActivateCommand;
+use App\Context\Common\Application\Command\User\ChangeActivationToken\Command as ChangeActivationTokenCommand;
 use App\Context\Common\Application\Command\User\Create\Command as CreateCommand;
 use App\Context\Common\Application\Command\User\UpdateNickname\Command as NicknameCommand;
 use App\Context\Common\Application\Command\User\UpdateStatus\Command as StatusCommand;
@@ -46,6 +47,12 @@ class UserDataTransformer implements DataTransformerInterface
             return new ActivateCommand(
                 token: $request->attributes->get("token"),
             );
+        }
+        
+        if ($operation === "changeActivationToken") {
+            $this->_validator->validate($object);
+
+            return new ChangeActivationTokenCommand($object->email);
         }
 
         if ($operation === "create") {
@@ -104,6 +111,7 @@ class UserDataTransformer implements DataTransformerInterface
         return \in_array($operation, [
             "signup",
             "activate",
+            "changeActivationToken",
             "create",
             "updateNickname",
             "updateStatus",

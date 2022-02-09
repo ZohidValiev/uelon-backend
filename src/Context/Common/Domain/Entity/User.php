@@ -81,6 +81,12 @@ use function is_callable;
             'input'  => 'App\Context\Common\Infostructure\Dto\EmptyContentDto',
             'read' => false,
         ],
+        'changeActivationToken' => [
+            'method' => 'patch',
+            'path'   => 'users/{id}/activation-token',
+            'input'  => 'App\Context\Common\Infostructure\Dto\ChangeActivationTokenDto',
+            'read' => false,
+        ],
         'updateNickname' => [
             'method' => 'patch',
             'path'   => 'users/{id}/nickname',
@@ -111,7 +117,7 @@ use function is_callable;
 class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
 {
     public const ROLE_USER  = 'ROLE_USER';
-    public const ROLE_MODERATOR  = 'ROLE_MODERATOR';
+    public const ROLE_MODERATOR = 'ROLE_MODERATOR';
     public const ROLE_ADMIN = 'ROLE_ADMIN';
 
     public const STATUS_DELETED  = 0;
@@ -186,7 +192,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
             ->setNickname($email->getNickname())
             ->setRole(self::ROLE_USER)
             ->setStatus(self::STATUS_INACTIVE)
-            ->setActivationToken(Token::generate(24 * 3600))
+            ->setActivationToken(Token::generate())
             ->setPassword(is_callable($password) ? call_user_func($password, $user) : $password);
 
         return $user;
@@ -409,14 +415,11 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
     }
 
     /**
+     * Метод активирует пользователя после регистрации
      * @throws DomainException|TokenDomainException
      */
     public function activate(): void
     {
-        if (!$this->isInactive()) {
-            throw new DomainException('A user status must be inactive.');
-        }
-
         if ($this->activationToken === null) {
             throw new DomainException('Activation token must be not null.');
         }
@@ -425,7 +428,31 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
             throw new TokenDomainException('Activation token has been expired.');
         }
 
+        if (!$this->isInactive()) {
+            throw new DomainException('A user status must be inactive.');
+        }
+
         $this->setActivationToken(null);
         $this->setStatus(self::STATUS_ACTIVE);
+    }
+
+    /**
+     * Метод гнерирует новый токен активации, если он просрочен 
+     * 
+     * @throws DomainException
+     * @return boolean true если сгенерирован новый токен активации, иначе false
+     */
+    public function generateActivationToken(): bool
+    {
+        if (!$this->isInactive()) {
+            throw new DomainException('A user status must be inactive.');
+        }
+        
+        if ($this->activationToken === null || $this->activationToken->isExpired()) {
+            $this->setActivationToken(Token::generate());
+            return true;
+        }
+
+        return false;
     }
 }

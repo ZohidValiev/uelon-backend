@@ -5,6 +5,7 @@ use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use App\Context\Common\Application\Command\User\Signup as AppSignup;
 use App\Context\Common\Application\Command\User\Create as AppCreate;
 use App\Context\Common\Application\Command\User\Activate as AppActivate;
+use App\Context\Common\Application\Command\User\ChangeActivationToken as AppChangeActivationToken;
 use App\Context\Common\Application\Command\User\UpdateNickname as AppUpdateNickname;
 use App\Context\Common\Application\Command\User\UpdateStatus as AppUpdateStatus;
 use App\Context\Common\Application\Command\User\UpdateRole as AppUpdateRole;
@@ -34,6 +35,7 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
     {
         return $data instanceof AppSignup\Command
             || $data instanceof AppActivate\Command
+            || $data instanceof AppChangeActivationToken\Command
             || $data instanceof AppCreate\Command
             || $data instanceof AppUpdateNickname\Command
             || $data instanceof AppUpdateStatus\Command
@@ -53,6 +55,11 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
 
             if ($data instanceof AppActivate\Command) {
                 return $this->_activate($data);
+            }
+            
+            if ($data instanceof AppChangeActivationToken\Command) {
+                $this->_changeActivationToken($data);
+                return null;
             }
 
             if ($data instanceof AppCreate\Command) {
@@ -134,6 +141,15 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
         return (new AppActivate\Handler(
             $this->_em, 
             $this->_repository
+        ))->handle($command);
+    }
+    
+    private function _changeActivationToken(AppChangeActivationToken\Command $command): User
+    {
+        return (new AppChangeActivationToken\Handler(
+            $this->_em,
+            $this->_repository,
+            $this->_eventDispatcher,
         ))->handle($command);
     }
 }
