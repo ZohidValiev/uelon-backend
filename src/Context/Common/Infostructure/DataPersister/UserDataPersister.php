@@ -14,6 +14,7 @@ use App\Context\Common\Domain\Repository\UserRepositoryInterface;
 use App\Context\Common\Exception\NotFoundDomainException;
 use App\Doctrine\Manager;
 use App\Util\EventDispatcher\EventDispatcherInterface;
+use App\Util\Exception\ServerHttpException;
 use App\Util\PasswordHasher;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -82,7 +83,7 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
         } catch (\DomainException $e) {
             throw new BadRequestHttpException($e->getMessage());
         } catch (\Throwable $e) {
-            throw $e; 
+            throw new ServerHttpException("Server exception");
         }
     }
 
