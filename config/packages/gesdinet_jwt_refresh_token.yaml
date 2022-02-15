@@ -2,7 +2,7 @@
 gesdinet_jwt_refresh_token:
     token_parameter_name: refreshToken
     single_use: true
-    refresh_token_class: App\Context\Common\Domain\Entity\JwtRefreshToken
+    №refresh_token_class: App\Context\Common\Domain\Entity\JwtRefreshToken
     cookie:
       enabled: true
       same_site: lax               # default value
