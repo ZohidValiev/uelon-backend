@@ -37,18 +37,6 @@ use function is_callable;
     ],
     itemOperations: [
         'get',
-        'signin' => [
-            'method' => 'patch',
-            'path'   => 'users/{id}/signin',
-            'input'  => 'App\Context\Common\Infostructure\Dto\SigninInputDto',
-            'output' => [
-                'class' => 'App\Context\Common\Infostructure\Dto\SigninOutputDto',
-                'groups' => ['u:read'],
-            ],
-            'deserialize' => false,
-            'validate' => false,
-            'write' => false,
-        ],
         'activate' => [
             'method' => 'patch',
             'path'   => 'users/{id}/activate/{token}',

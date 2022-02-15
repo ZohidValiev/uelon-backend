@@ -14,9 +14,9 @@ class AdminUserChecker implements UserCheckerInterface
             return;
         }
         
-        if (!$user->isRoleAdmin()) {
-            throw new CustomUserMessageAccountStatusException('Неправельный логин или пароль.');
-        }
+        // if (!$user->isRoleAdmin()) {
+        //     throw new CustomUserMessageAccountStatusException('Неправельный логин или пароль.');
+        // }
     }
 
     public function checkPostAuth(UserInterface $user)
