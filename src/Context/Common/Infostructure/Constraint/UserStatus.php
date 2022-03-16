@@ -12,9 +12,10 @@ class UserStatus extends Compound
     protected function getConstraints(array $options = []): array
     {
         return [
-            new Sequentially([
-                ...$options,
-                "constraints" => [
+            new Sequentially(
+                payload: $options["payload"] ?? null,
+                groups: $options["groups"] ?? [],
+                constraints: [
                     new NotBlank(
                         allowNull: false,
                         message: "Выберите значение",
@@ -25,8 +26,8 @@ class UserStatus extends Compound
                         invalidMessage: "Выберите числовое значение",
                         notInRangeMessage: "Значение должно быть между {{ min }} и {{ max }}",
                     ),
-                ]
-            ]),
+                ],
+            ),
         ];
     }
 }

@@ -9,9 +9,10 @@ class Email extends Assert\Compound
     protected function getConstraints(array $options = []): array
     {
         return [
-            new Assert\Sequentially([
-                ...$options,
-                "constraints" => [
+            new Assert\Sequentially(
+                payload: $options["payload"] ?? null,
+                groups: $options["groups"] ?? [],
+                constraints: [
                     new Assert\NotBlank(
                         allowNull: false,
                         message: "Введите значение",
@@ -19,8 +20,8 @@ class Email extends Assert\Compound
                     new Assert\Email(
                         message: "Введите правильный адрес",
                     ),
-                ]
-            ]),
+                ],
+            ),
         ];
     }
 }

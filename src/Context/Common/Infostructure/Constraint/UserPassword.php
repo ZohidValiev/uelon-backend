@@ -13,9 +13,10 @@ class UserPassword extends Compound
     protected function getConstraints(array $options = []): array
     {
         return [
-            new Sequentially([
-                ...$options,
-                "constraints" => [
+            new Sequentially(
+                payload: $options["payload"] ?? null,
+                groups: $options["groups"] ?? [],
+                constraints: [
                     new NotBlank(
                         allowNull: false,
                         message: "Введите значение",
@@ -30,8 +31,8 @@ class UserPassword extends Compound
                         minMessage: "Введите не менее {{ limit }} символов",
                         maxMessage: "Введите не более {{ limit }} символов",
                     ),
-                ]
-            ]),
+                ],
+            ),
         ];
     }
 }

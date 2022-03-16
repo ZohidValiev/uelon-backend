@@ -13,9 +13,10 @@ class UserRole extends Compound
     protected function getConstraints(array $options): array
     {
         return [
-            new Sequentially([
-                "groups" => $options["groups"] ?? [],
-                "constraints" => [
+            new Sequentially(
+                payload: $options["payload"] ?? null,
+                groups: $options["groups"] ?? [],
+                constraints: [
                     new NotBlank(
                         allowNull: false,
                         message: "Выберите значение",
@@ -32,8 +33,8 @@ class UserRole extends Compound
                         ],
                         message: "Выбрано неправильное значение",
                     ),
-                ]
-            ]),
+                ],
+            ),
         ];
     }
 }

@@ -17,8 +17,8 @@ class Handler
     {
         $translations = \array_map(function($translation){
             return [
-                'locale' => $translation->locale,
-                'title'  => $translation->title,
+                'locale' => $translation->getLocale(),
+                'title'  => $translation->getTitle(),
             ];
         }, $command->getTranslations());
 

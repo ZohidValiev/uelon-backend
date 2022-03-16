@@ -8,9 +8,12 @@ use App\Context\Category\Application\Command\Delete as AppDelete;
 use App\Context\Category\Application\Command\ChangePosition as AppChangePosition;
 use App\Context\Category\Domain\Entity\Category;
 use App\Context\Category\Domain\Repository\CategoryRepositoryInterface;
+use App\Context\Common\Exception\NotFoundDomainException;
 use App\Doctrine\Manager;
+use App\Util\Exception\ServerHttpException;
 use DomainException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CategoryDataPersister implements ContextAwareDataPersisterInterface
 {
@@ -48,10 +51,12 @@ class CategoryDataPersister implements ContextAwareDataPersisterInterface
             if ($data instanceof AppChangePosition\Command) {
                 return $this->_changePosition($data);
             }
+        } catch (NotFoundDomainException $e) {
+            throw new NotFoundHttpException($e->getMessage());
         } catch (DomainException $e) {
             throw new BadRequestHttpException($e->getMessage(), $e);
         } catch (\Throwable $e) {
-            throw $e;
+            throw new ServerHttpException("Server exception");
         }
     }
 
@@ -65,7 +70,7 @@ class CategoryDataPersister implements ContextAwareDataPersisterInterface
         } catch (DomainException $e) {
             throw new BadRequestHttpException($e->getMessage(), $e);
         } catch (\Throwable $e) {
-            throw $e;
+            throw new ServerHttpException("Server exception");
         }
     }
 

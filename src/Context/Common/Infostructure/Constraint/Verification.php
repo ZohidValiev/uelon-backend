@@ -12,9 +12,10 @@ class Verification extends Compound
     protected function getConstraints(array $options = []): array
     {
         return [
-            new Sequentially([
-                ...$options,
-                "constraints" => [
+            new Sequentially(
+                payload: $options["payload"] ?? null,
+                groups: $options["groups"] ?? [],
+                constraints: [
                     new NotBlank(
                         allowNull: false,
                         message: "Введите значение",
@@ -23,8 +24,8 @@ class Verification extends Compound
                         type: "bool",
                         message: "Введите логическое значение",
                     ),
-                ]
-            ]),
+                ],
+            ),
         ];
     }
 }

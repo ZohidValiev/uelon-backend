@@ -18,29 +18,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 #[ApiResource(
     compositeIdentifier: false,
-    collectionOperations: [
-        // 'create' => [
-        //     'method' => 'post',
-        //     'path' => '/categories/{categoryId}/translations',
-        //     'requirements' => [
-        //         'categoryId' => '\d+',
-        //     ],
-        //     'openapi_context' => [
-        //         'parameters' => [
-        //             [
-        //                 'name' => 'categoryId',
-        //                 'in' => 'path',
-        //                 'required' => true,
-        //                 'description' => 'Category id',
-        //                 'schema' => [
-        //                     'type' => 'integer',
-        //                 ],
-        //             ]
-        //         ]
-        //     ],
-        //     'input'  => 'App\Context\Category\Infostructure\Dto\CategoryTranslationCreateDto',
-        // ],
-    ],
+    collectionOperations: [],
     itemOperations: [
         'get' => [
             'path'   => '/categories/{categoryId}/translations/{locale}',
@@ -71,64 +49,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 ],
             ],
         ],
-        // 'update' => [
-        //     'read' => false,
-        //     'method' => 'patch',
-        //     'path'   => '/categories/{categoryId}/translations/{locale}',
-        //     'requirements' => [
-        //         'categoryId' => '\d+',
-        //         'locale'     => '\w+',
-        //     ],
-        //     'openapi_context' => [
-        //         'parameters' => [
-        //             [
-        //                 'name' => 'categoryId',
-        //                 'in' => 'path',
-        //                 'description' => 'Category Id',
-        //                 'schema' => [
-        //                     'type' => 'integer'
-        //                 ],
-        //             ],
-        //             [
-        //                 'name' => 'locale',
-        //                 'in' => 'path',
-        //                 'description' => 'Language locale',
-        //                 'schema' => [
-        //                     'type' => 'string'
-        //                 ],
-        //             ],
-        //         ],
-        //     ],
-        //     'input' => 'App\Context\Category\Infostructure\Dto\CategoryTranslationUpdateDto',
-        // ],
-        // 'delete' => [
-        //     'method' => 'delete',
-        //     'path'   => '/categories/{categoryId}/translations/{locale}',
-        //     'requirements' => [
-        //         'categoryId' => '\d+',
-        //         'locale'     => '\w+',
-        //     ],
-        //     'openapi_context' => [
-        //         'parameters' => [
-        //             [
-        //                 'name' => 'categoryId',
-        //                 'in' => 'path',
-        //                 'description' => 'Category Id',
-        //                 'schema' => [
-        //                     'type' => 'integer'
-        //                 ],
-        //             ],
-        //             [
-        //                 'name' => 'locale',
-        //                 'in' => 'path',
-        //                 'description' => 'Language locale',
-        //                 'schema' => [
-        //                     'type' => 'string'
-        //                 ],
-        //             ],
-        //         ],
-        //     ],
-        // ],
     ],
 )]
 class CategoryTranslation

@@ -24,20 +24,28 @@ use function is_callable;
     ],
     collectionOperations: [
         'signup' => [
+            // 'security' => 'is_granted("PUBLIC_ACCESS")',
             'method' => 'post',
             'path'   => 'users/signup',
             'input'  => 'App\Context\Common\Infostructure\Dto\SignupDto',
         ],
-        'get',
+        'get' => [
+            // 'security' => 'is_granted("USER_COLLECTION_GET", object)',
+        ],
         'create' => [
+            // 'security' => 'is_granted("USER_CREATE", object)',
             'method' => 'post',
             'path'   => 'users',
             'input'  => 'App\Context\Common\Infostructure\Dto\UserCreateDto',
         ],
     ],
     itemOperations: [
-        'get',
+        'get' => [
+            // 'security' => 'is_granted("USER_GET", object)',
+        ],
         'activate' => [
+            // 'security' => 'is_granted("USER_ACTIVATE", object)',
+            // 'security' => 'is_granted("PUBLIC_ACCESS")',
             'method' => 'patch',
             'path'   => 'users/{id}/activate/{token}',
             'requirements' => [
@@ -70,24 +78,29 @@ use function is_callable;
             'read' => false,
         ],
         'changeActivationToken' => [
+            // 'security' => 'is_granted("USER_CHANGE_ACTIVATION_TOKEN", object)',
+            // 'security' => 'is_granted("PUBLIC_ACCESS")',
             'method' => 'patch',
             'path'   => 'users/{id}/activation-token',
             'input'  => 'App\Context\Common\Infostructure\Dto\ChangeActivationTokenDto',
             'read' => false,
         ],
         'updateNickname' => [
+            // 'security' => 'is_granted("USER_UPDATE_NICKNAME", object)',
             'method' => 'patch',
             'path'   => 'users/{id}/nickname',
             'input'  => 'App\Context\Common\Infostructure\Dto\UserFieldDto',
             'read'   => false,
         ],
         'updateStatus' => [
+            // 'security' => 'is_granted("USER_UPDATE_STATUS", object)',
             'method' => 'patch',
             'path'   => 'users/{id}/status',
             'input'  => 'App\Context\Common\Infostructure\Dto\UserFieldDto',
             'read'   => false,
         ],
         'updateRole' => [
+            // 'security' => 'is_granted("USER_UPDATE_ROLE", object)',
             'method' => 'patch',
             'path'   => 'users/{id}/role',
             'input'  => 'App\Context\Common\Infostructure\Dto\UserFieldDto',
@@ -104,7 +117,8 @@ use function is_callable;
 )]
 class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
 {
-    public const ROLE_USER  = 'ROLE_USER';
+    public const ROLE_GUEST = 'ROLE_USER';
+    public const ROLE_USER = 'ROLE_USER';
     public const ROLE_MODERATOR = 'ROLE_MODERATOR';
     public const ROLE_ADMIN = 'ROLE_ADMIN';
 
@@ -263,10 +277,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
    
     public function getRoles(): array
     {
-        $roles = [...$this->roles];
-        $roles[] = 'ROLE_GUEST';
-
-        return \array_unique($roles);
+        return \array_values(\array_unique([self::ROLE_GUEST, ...$this->roles]));
     }
 
     public function setRole(string $role): self

@@ -7,7 +7,6 @@ class CategoryChangePositionDto
 {
     /**
      * Category new position
-     * @var int
      */
     #[CategoryPosition()]
     public $position;

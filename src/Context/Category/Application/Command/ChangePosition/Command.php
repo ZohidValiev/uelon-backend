@@ -19,6 +19,6 @@ class Command
 
     public function getPosition(): int
     {
-        return $this->id;
+        return $this->position;
     }
 }

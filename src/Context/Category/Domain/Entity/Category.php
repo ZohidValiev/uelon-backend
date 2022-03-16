@@ -19,14 +19,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ],
     collectionOperations: [
         'roots' => [
+            // 'security' => 'is_granted("ROLE_ADMIN")',
             'method' => 'get',
             'path'   => '/categories',
-            // 'output_formats' => [
-            //     'json' => ['application/json'],
-            //     'jsonapi' => ['application/vnd.api+json'],
-            // ]
         ],
         'children' => [
+            // 'security' => 'is_granted("ROLE_ADMIN")',
             'method' => 'get',
             'path'   => '/categories/{id}/children',
             'requirements' => [
@@ -46,20 +44,22 @@ use Symfony\Component\Serializer\Annotation\Groups;
             ],
         ],
         'create' => [
+            // 'security' => 'is_granted("ROLE_ADMIN")',
             'method' => 'post',
             'input'  => 'App\Context\Category\Infostructure\Dto\CategoryCreateDto',
         ],
     ],
     itemOperations: [
         'get' => [
+            // 'security' => 'is_granted("ROLE_ADMIN")',
             'method' => 'get',
         ],
         'changePosition' => [
+            // 'security' => 'is_granted(ROLE_ADMIN)',
             'method' => 'patch',
             'path'   => '/categories/{id}/position',
             'input'  => 'App\Context\Category\Infostructure\Dto\CategoryChangePositionDto',
             'read'   => false,
-            // 'write'  => false,
             'requirements' => [
                 'id' => '\d+',
             ],
@@ -77,11 +77,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
             ],
         ],
         'update' => [
+            // 'security' => 'is_granted("ROLE_ADMIN")',
             'method' => 'patch',
             'input'  => 'App\Context\Category\Infostructure\Dto\CategoryUpdateDto',
             'read'   => false,
         ],
-        'delete',
+        'delete' => [
+            // 'security' => 'is_granted("ROLE_ADMIN")',
+        ],
     ],
     normalizationContext: [
         'groups' => [
