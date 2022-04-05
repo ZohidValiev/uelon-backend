@@ -9,6 +9,7 @@ use App\Context\Common\Application\Command\User\ChangeActivationToken as AppChan
 use App\Context\Common\Application\Command\User\UpdateNickname as AppUpdateNickname;
 use App\Context\Common\Application\Command\User\UpdateStatus as AppUpdateStatus;
 use App\Context\Common\Application\Command\User\UpdateRole as AppUpdateRole;
+use App\Context\Common\Application\Command\User\Delete as AppDelete;
 use App\Context\Common\Domain\Entity\User;
 use App\Context\Common\Domain\Repository\UserRepositoryInterface;
 use App\Context\Common\Exception\NotFoundDomainException;
@@ -16,6 +17,7 @@ use App\Doctrine\Manager;
 use App\Util\EventDispatcher\EventDispatcherInterface;
 use App\Util\Exception\ServerHttpException;
 use App\Util\PasswordHasher;
+use DomainException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -92,7 +94,13 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
      */
     public function remove($data, array $context = [])
     {
-
+        try {
+            (new AppDelete\Handler($this->_em))->handle($data);
+        } catch (DomainException $e) {
+            throw new BadRequestHttpException($e->getMessage(), $e);
+        } catch (\Throwable $e) {
+            throw new ServerHttpException("Server exception");
+        }
     }
 
     private function _createUser(AppCreate\Command $command): User

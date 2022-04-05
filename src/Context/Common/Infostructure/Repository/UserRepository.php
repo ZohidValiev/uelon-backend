@@ -1,11 +1,14 @@
 <?php
 namespace App\Context\Common\Infostructure\Repository;
 
+use Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
 use App\Context\Common\Domain\Entity\User;
 use App\Context\Common\Domain\Repository\UserRepositoryInterface;
 use App\Context\Common\Exception\NotFoundDomainException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Paginator;
+use Doctrine\Common\Collections\Criteria;
 
 class UserRepository extends ServiceEntityRepository implements UserRepositoryInterface
 {
@@ -59,5 +62,20 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
         return $this->findOneBy([
             "email" => $email,
         ]);
+    }
+
+    public function getNotDeletedUsers(int $page, int $itemsPerPage, string $idOrder = "DESC"): Paginator
+    {
+        $firstResult = ($page - 1) * $itemsPerPage;
+
+        $query = $this->createQueryBuilder("u")
+            ->where("u.status != :status")
+            ->setParameter("status", User::STATUS_DELETED)
+            ->orderBy("u.id", $idOrder)
+            ->getQuery()
+            ->setFirstResult($firstResult)
+            ->setMaxResults($itemsPerPage);
+        
+        return new Paginator(new DoctrinePaginator($query));
     }
 }

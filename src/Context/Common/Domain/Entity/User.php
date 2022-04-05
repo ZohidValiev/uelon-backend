@@ -106,15 +106,16 @@ use function is_callable;
             'input'  => 'App\Context\Common\Infostructure\Dto\UserFieldDto',
             'read'   => false,
         ],
+        'delete',
     ],
     normalizationContext: [
         'groups' => ['u:read'],
-    ]
+    ],
 )]
-#[ApiFilter(
-    OrderFilter::class,
-    properties: ['id' => 'DESC'],
-)]
+// #[ApiFilter(
+//     OrderFilter::class,
+//     properties: ['id' => 'DESC'],
+// )]
 class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
 {
     public const ROLE_GUEST = 'ROLE_USER';
