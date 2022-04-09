@@ -1,5 +1,5 @@
 <?php
-namespace App\Context\Common\Infostructure\Voter;
+namespace App\Context\Common\Infostructure\Security\Voter;
 
 use App\Context\Common\Domain\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -10,6 +10,7 @@ final class UserVoter extends Voter
 {
     private const PUBLIC_ACCESS = "PUBLIC_ACCESS";
     private const USER_COLLECTION_GET = "USER_COLLECTION_GET";
+    private const USER_SIGNUP = "USER_SIGNUP";
     private const USER_CREATE = "USER_CREATE";
     private const USER_GET = "USER_GET";
     private const USER_ACTIVATE = "USER_ACTIVATE";
@@ -26,7 +27,8 @@ final class UserVoter extends Voter
     {
         $supportsSubject = $subject instanceof User;
         $supportsAttribute = \in_array($attribute, [
-            self::USER_COLLECTION_GET,
+            // self::USER_COLLECTION_GET,
+            self::USER_SIGNUP,
             self::USER_CREATE,
             self::USER_GET,
             self::USER_ACTIVATE,
@@ -50,17 +52,17 @@ final class UserVoter extends Voter
         $currentUser = $token->getUser();
 
         match ($attribute) {
-            self::USER_COLLECTION_GET, 
             self::USER_CREATE ,
-            self::USER_GET,
             self::USER_UPDATE_STATUS,
             self::USER_UPDATE_ROLE,
                 => $this->_isGranted(User::ROLE_ADMIN),
 
+            self::USER_SIGNUP,
             self::USER_ACTIVATE,
             self::USER_CHANGE_ACTIVATION_TOKEN,
                 => $this->_isGranted(self::PUBLIC_ACCESS),
 
+            self::USER_GET,
             self::USER_UPDATE_NICKNAME,
                 => $this->_isGranted(User::ROLE_ADMIN) 
                 || $this->_isGranted(User::ROLE_USER) && $subject->getId() === $currentUser->getId(),
