@@ -9,7 +9,6 @@ use Symfony\Component\Security\Core\Security;
 final class UserVoter extends Voter
 {
     private const PUBLIC_ACCESS = "PUBLIC_ACCESS";
-    private const USER_COLLECTION_GET = "USER_COLLECTION_GET";
     private const USER_SIGNUP = "USER_SIGNUP";
     private const USER_CREATE = "USER_CREATE";
     private const USER_GET = "USER_GET";
@@ -51,8 +50,8 @@ final class UserVoter extends Voter
          */
         $currentUser = $token->getUser();
 
-        match ($attribute) {
-            self::USER_CREATE ,
+        return match ($attribute) {
+            self::USER_CREATE,
             self::USER_UPDATE_STATUS,
             self::USER_UPDATE_ROLE,
                 => $this->_isGranted(User::ROLE_ADMIN),
