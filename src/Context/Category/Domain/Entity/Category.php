@@ -19,12 +19,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ],
     collectionOperations: [
         'roots' => [
-            // 'security' => 'is_granted("ROLE_ADMIN")',
             'method' => 'get',
             'path'   => '/categories',
         ],
         'children' => [
-            // 'security' => 'is_granted("ROLE_ADMIN")',
             'method' => 'get',
             'path'   => '/categories/{id}/children',
             'requirements' => [
@@ -44,18 +42,18 @@ use Symfony\Component\Serializer\Annotation\Groups;
             ],
         ],
         'create' => [
-            // 'security' => 'is_granted("ROLE_ADMIN")',
+            'security_post_denormalize' => 'is_granted("CATEGORY_CREATE", object)',
             'method' => 'post',
             'input'  => 'App\Context\Category\Infostructure\Dto\CategoryCreateDto',
         ],
     ],
     itemOperations: [
         'get' => [
-            // 'security' => 'is_granted("ROLE_ADMIN")',
+            'security' => 'is_granted("CATEGORY_GET", object)',
             'method' => 'get',
         ],
         'changePosition' => [
-            // 'security' => 'is_granted(ROLE_ADMIN)',
+            'security' => 'is_granted("CATEGORY_CHANGE_POSITION", object)',
             'method' => 'patch',
             'path'   => '/categories/{id}/position',
             'input'  => 'App\Context\Category\Infostructure\Dto\CategoryChangePositionDto',
@@ -77,13 +75,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
             ],
         ],
         'update' => [
-            // 'security' => 'is_granted("ROLE_ADMIN")',
+            'security' => 'is_granted("CATEGORY_UPDATE", object)',
             'method' => 'patch',
             'input'  => 'App\Context\Category\Infostructure\Dto\CategoryUpdateDto',
             'read'   => false,
         ],
         'delete' => [
-            // 'security' => 'is_granted("ROLE_ADMIN")',
+            'security' => 'is_granted("CATEGORY_DELETE", object)',
         ],
     ],
     normalizationContext: [

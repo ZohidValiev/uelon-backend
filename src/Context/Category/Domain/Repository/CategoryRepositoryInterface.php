@@ -20,9 +20,9 @@ interface CategoryRepositoryInterface
 
    public function getNextPosition(?int $parentId = null): int;
 
-   public function findRoots(): array;
+   public function findRoots(bool $active = null): array;
 
-   public function findChildren(int $id): array;
+   public function findChildren(int $id, bool $active = null): array;
 
    public function findAncestors(int $childId): iterable;
 

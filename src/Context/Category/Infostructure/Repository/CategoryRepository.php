@@ -71,38 +71,62 @@ class CategoryRepository extends ServiceEntityRepository implements CategoryRepo
             ]);
         }
         
-        return (int)$qb->execute()->fetchOne();
+        return (int)$qb->fetchOne();
+        // return (int)$qb->execute()->fetchOne();
     }
 
-    public function findRoots(): array
+    public function findRoots(bool $active = null): array
     {
-        $dql = <<<DQL
-            SELECT c FROM App\Context\Category\Domain\Entity\Category c
-            WHERE c.parent IS NULL
-            ORDER BY c.position ASC
-        DQL;
+        $qb = $this->createQueryBuilder("c")
+            ->where("c.parent IS NULL")
+            ->orderBy("c.position", "ASC");
 
-        return $this->_em
-                    ->createQuery($dql)
-                    ->getResult();
+        if ($active !== null) {
+            $qb->andWhere("c.isActive = :isActive");
+            $qb->setParameter("isActive", $active);
+        }
+
+        return $qb->getQuery()->getResult();
+
+        // $dql = <<<DQL
+        //     SELECT c FROM App\Context\Category\Domain\Entity\Category c
+        //     WHERE c.parent IS NULL
+        //     ORDER BY c.position ASC
+        // DQL;
+
+        // return $this->_em
+        //             ->createQuery($dql)
+        //             ->getResult();
     }
 
-    public function findChildren(int $id): array
+    public function findChildren(int $id, bool $active = null): array
     {
         if ($id < 1) {
             return [];
         }
 
-        $dql = <<<DQL
-            SELECT c FROM App\Context\Category\Domain\Entity\Category c
-            WHERE c.parent = :id
-            ORDER BY c.position ASC
-        DQL;
+        $qb = $this->createQueryBuilder("c")
+            ->where("c.parent = :id")
+            ->orderBy("c.position", "ASC")
+            ->setParameter("id", $id);
 
-        return $this->_em
-                    ->createQuery($dql)
-                    ->setParameter('id', $id)
-                    ->getResult();
+        if ($active !== null) {
+            $qb->andWhere("c.isActive = :isActive");
+            $qb->setParameter("isActive", $active);
+        }
+
+        return $qb->getQuery()->getResult();
+
+        // $dql = <<<DQL
+        //     SELECT c FROM App\Context\Category\Domain\Entity\Category c
+        //     WHERE c.parent = :id
+        //     ORDER BY c.position ASC
+        // DQL;
+
+        // return $this->_em
+        //             ->createQuery($dql)
+        //             ->setParameter('id', $id)
+        //             ->getResult();
     }
 
     /**
@@ -182,13 +206,11 @@ class CategoryRepository extends ServiceEntityRepository implements CategoryRepo
             WHERE c.id = :id
         SQL;
 
-        $connection = $this->_em->getConnection();
-
-        return $connection->createQueryBuilder()
-                    ->select('EXISTS(' . $subSql . ')')
-                    ->setParameter('id', $id)
-                    ->execute()
-                    ->fetchOne() == 1;
+        return $this->_em->getConnection()
+            ->createQueryBuilder()
+            ->select('EXISTS(' . $subSql . ')')
+            ->setParameter('id', $id)
+            ->fetchOne() == 1;
     }
 
     public function existsTranslationLocaleBy(int $categoryId, string $locale): bool
