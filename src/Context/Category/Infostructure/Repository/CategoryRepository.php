@@ -8,6 +8,7 @@ use App\Context\Common\Exception\NotFoundDomainException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use InvalidArgumentException;
 
 class CategoryRepository extends ServiceEntityRepository implements CategoryRepositoryInterface
 {
@@ -72,11 +73,14 @@ class CategoryRepository extends ServiceEntityRepository implements CategoryRepo
         }
         
         return (int)$qb->fetchOne();
-        // return (int)$qb->execute()->fetchOne();
     }
 
     public function findRoots(bool $active = null): array
     {
+        if ($active === false) {
+            throw new InvalidArgumentException("Argument active = false is not supported.");
+        }
+
         $qb = $this->createQueryBuilder("c")
             ->where("c.parent IS NULL")
             ->orderBy("c.position", "ASC");
@@ -87,20 +91,14 @@ class CategoryRepository extends ServiceEntityRepository implements CategoryRepo
         }
 
         return $qb->getQuery()->getResult();
-
-        // $dql = <<<DQL
-        //     SELECT c FROM App\Context\Category\Domain\Entity\Category c
-        //     WHERE c.parent IS NULL
-        //     ORDER BY c.position ASC
-        // DQL;
-
-        // return $this->_em
-        //             ->createQuery($dql)
-        //             ->getResult();
     }
 
     public function findChildren(int $id, bool $active = null): array
     {
+        if ($active === false) {
+            throw new InvalidArgumentException("Argument active = false is not supported.");
+        }
+        
         if ($id < 1) {
             return [];
         }
@@ -116,17 +114,6 @@ class CategoryRepository extends ServiceEntityRepository implements CategoryRepo
         }
 
         return $qb->getQuery()->getResult();
-
-        // $dql = <<<DQL
-        //     SELECT c FROM App\Context\Category\Domain\Entity\Category c
-        //     WHERE c.parent = :id
-        //     ORDER BY c.position ASC
-        // DQL;
-
-        // return $this->_em
-        //             ->createQuery($dql)
-        //             ->setParameter('id', $id)
-        //             ->getResult();
     }
 
     /**
