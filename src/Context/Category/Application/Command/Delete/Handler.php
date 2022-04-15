@@ -17,6 +17,8 @@ class Handler
     public function handle(Category $category)
     {
         $service = new CategoryDeleteService($this->_em, $this->_repository);
-        $service($category);
+        $this->_em->wrapInTransaction(function() use ($service, $category) {
+            $service($category);
+        });
     }
 }

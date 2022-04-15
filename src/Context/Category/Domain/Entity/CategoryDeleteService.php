@@ -38,7 +38,5 @@ class CategoryDeleteService
         foreach ($sublings as $subling) {
             $subling->positionUp();
         }
-
-        $this->_em->flush();
     }
 }

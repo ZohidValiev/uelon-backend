@@ -17,7 +17,7 @@ class Handler
     {
         $repository = $this->_repository;
 
-        $category = $this->_em->transactional(function() use ($command, $repository) {
+        $category = $this->_em->wrapInTransaction(function() use ($command, $repository) {
             $service = new CategoryChangePositionService($repository);
             return $service($command->getId(), $command->getPosition());
         });

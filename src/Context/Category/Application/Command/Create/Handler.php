@@ -23,15 +23,16 @@ class Handler
         }, $command->getTranslations());
 
         $service  = new CategoryCreateService($this->_repository);
-        $category = $service(
-            $command->getIcon(), 
-            $command->getIsActive(), 
-            $translations, 
-            $command->getParentId()
-        );
-
-        $this->_em->persist($category);
-        $this->_em->flush();
+        $category = $this->_em->wrapInTransaction(function () use ($service, $command, $translations) {
+            $category = $service(
+                $command->getIcon(), 
+                $command->getIsActive(), 
+                $translations, 
+                $command->getParentId()
+            );
+            $this->_em->persist($category);
+            return $category;
+        });
 
         return $category;
     }
