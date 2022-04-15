@@ -15,4 +15,9 @@ class PasswordHasher
     {
         return $this->_encoder->hashPassword($user, $plainPassword);
     }
+
+    public function isPasswordValid($user, string $plainPassword): bool
+    {
+        return $this->isPasswordValid($user, $plainPassword);
+    }
 }
