@@ -29,8 +29,9 @@ class Handler
 
         $this->_eventDispatcher->dispatch(new SignupDomainEvent($user));
 
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->_em->wrapInTransaction(function() use ($user) {
+            $this->_em->persist($user);
+        });
 
         $this->_eventDispatcher->dispatch(new SignupedDomainEvent($user));
 

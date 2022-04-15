@@ -5,7 +5,6 @@ use App\Context\Common\Application\Event\UserCreatedDomainEvent;
 use App\Context\Common\Application\Event\UserCreateDomainEvent;
 use App\Context\Common\Domain\Entity\User;
 use App\Doctrine\Manager;
-use App\Context\Common\Domain\Repository\UserRepositoryInterface;
 use App\Util\EventDispatcher\EventDispatcherInterface;
 use App\Util\PasswordHasher;
 
@@ -34,8 +33,9 @@ class Handler
             $this->_eventDispatcher->dispatch(new UserCreateDomainEvent($user));
         }
         
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->_em->wrapInTransaction(function() use ($user) {
+            $this->_em->persist($user);
+        });
 
         if ($command->getUseVerification()) {
             $this->_eventDispatcher->dispatch(new UserCreatedDomainEvent($user));

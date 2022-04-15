@@ -22,7 +22,7 @@ final class Handler
      */
     public function handle(Command $command): User
     {
-        $user = $this->_em->transactional(function() use ($command) {
+        $user = $this->_em->wrapInTransaction(function() use ($command) {
             $user = $this->_repository->getByEmail($command->getEmail());
             $user->generateActivationToken();
             return $user;
