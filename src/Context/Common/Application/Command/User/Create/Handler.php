@@ -33,9 +33,8 @@ class Handler
             $this->_eventDispatcher->dispatch(new UserCreateDomainEvent($user));
         }
         
-        $this->_em->wrapInTransaction(function() use ($user) {
-            $this->_em->persist($user);
-        });
+        $this->_em->persist($user);
+        $this->_em->flush();
 
         if ($command->getUseVerification()) {
             $this->_eventDispatcher->dispatch(new UserCreatedDomainEvent($user));

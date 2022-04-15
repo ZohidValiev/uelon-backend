@@ -18,8 +18,7 @@ class Handler
             throw new DomainException("Повторное удаление пользователя.");
         }
 
-        $this->_em->wrapInTransaction(function() use ($user) {
-            $user->setStatus(User::STATUS_DELETED);
-        });
+        $user->setStatus(User::STATUS_DELETED);
+        $this->_em->flush();
     }
 }
