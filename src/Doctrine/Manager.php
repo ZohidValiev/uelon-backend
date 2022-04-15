@@ -10,14 +10,6 @@ class Manager
     {}
 
     /**
-     * @deprecated Do not use this method. Since doctrine version 2.10 this method is deprecated.
-     */
-    public function transactional($callback)
-    {
-        return $this->_em->transactional($callback);
-    }
-
-    /**
      * @return mixed
      */
     public function wrapInTransaction(callable $func)
