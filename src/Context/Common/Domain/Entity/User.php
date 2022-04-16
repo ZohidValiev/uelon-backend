@@ -81,6 +81,12 @@ use function is_callable;
             'input'  => 'App\Context\Common\Infostructure\Dto\ChangeActivationTokenDto',
             'read' => false,
         ],
+        'changePassword' => [
+            'security' => 'is_granted("USER_CHANGE_PASSWORD", object)',
+            'method' => 'patch',
+            'path'   => 'users/{id}/password',
+            'input'  => 'App\Context\Common\Infostructure\Dto\UserChangePasswordDto',
+        ],
         'updateNickname' => [
             'security' => 'is_granted("USER_UPDATE_NICKNAME", object)',
             'method' => 'patch',

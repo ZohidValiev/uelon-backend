@@ -11,7 +11,9 @@ use App\Context\Common\Application\Command\User\Create\Command as CreateCommand;
 use App\Context\Common\Application\Command\User\UpdateNickname\Command as NicknameCommand;
 use App\Context\Common\Application\Command\User\UpdateStatus\Command as StatusCommand;
 use App\Context\Common\Application\Command\User\UpdateRole\Command as RoleCommand;
+use App\Context\Common\Application\Command\User\ChangePassword\Command as UserPasswordCommand;
 use App\Context\Common\Infostructure\Dto\SignupDto;
+use App\Context\Common\Infostructure\Dto\UserChangePasswordDto;
 use App\Context\Common\Infostructure\Dto\UserCreateDto;
 use App\Context\Common\Infostructure\Dto\UserFieldDto;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -25,7 +27,7 @@ class UserDataTransformer implements DataTransformerInterface
     {}
 
     /**
-     * @param UserFieldDto|UserCreateDto|SignupDto $object
+     * @param UserFieldDto|UserCreateDto|SignupDto|UserChangePasswordDto $object
      */
     public function transform($object, string $to, array $context = [])
     {
@@ -66,6 +68,15 @@ class UserDataTransformer implements DataTransformerInterface
                 role: $object->role,
                 status: $object->status,
                 useVerification: $object->useVerification,
+            );
+        }
+
+        if ($operation === "changePassword") {
+            $this->_validator->validate($object);
+
+            return new UserPasswordCommand(
+                currentPassword: $object->currentPassword,
+                newPassword: $object->password,
             );
         }
 
@@ -113,6 +124,7 @@ class UserDataTransformer implements DataTransformerInterface
             "activate",
             "changeActivationToken",
             "create",
+            "changePassword",
             "updateNickname",
             "updateStatus",
             "updateRole",
