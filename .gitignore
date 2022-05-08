@@ -1,5 +1,9 @@
 ###> symfony/framework-bundle ###
+/src/Controller
 /test.php
+/phpunit.xml.dist
+
+
 /.env.local
 /.env.local.php
 /.env.*.local
@@ -19,3 +23,8 @@
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
+
+###> symfony/phpunit-bridge ###
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###

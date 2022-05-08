@@ -1,3 +1,4 @@
 twig:
     default_path: '%kernel.project_dir%/templates'
-
+    paths:
+        '%kernel.project_dir%/src/Users/Infostructure/templates/email': 'users.email'

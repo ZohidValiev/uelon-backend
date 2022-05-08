@@ -8,31 +8,31 @@ doctrine:
         # server_version: '13'
 
         types:
-            #email: App\Doctrine\Type\UserEmailType
-            token: App\Doctrine\Type\TokenType
+            token: App\Shared\Infostructure\Database\ORM\Type\TokenType
 
     orm:
         auto_generate_proxy_classes: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
         auto_mapping: true
         mappings:
-            App\Context\Category:
+            # App\Shared:
+            #     is_bundle: false
+            #     type: annotation
+            #     dir: '%kernel.project_dir%/src/Shared/Domain/Entity'
+            #     prefix: 'App\Shared\Domain\Entity'
+            #     alias: App
+
+            App\Users:
                 is_bundle: false
                 type: annotation
-                dir: '%kernel.project_dir%/src/Context/Category/Domain/Entity'
-                prefix: 'App\Context\Category\Domain\Entity'
+                dir: '%kernel.project_dir%/src/Users/Domain/Entity'
+                prefix: 'App\Users\Domain\Entity'
                 alias: App
 
-            App\Context\Common:
+            App\Categories:
                 is_bundle: false
                 type: annotation
-                dir: '%kernel.project_dir%/src/Context/Common/Domain/Entity'
-                prefix: 'App\Context\Common\Domain\Entity'
+                dir: '%kernel.project_dir%/src/Categories/Domain/Entity'
+                prefix: 'App\Categories\Domain\Entity'
                 alias: App
 
-            App:
-                is_bundle: false
-                type: annotation
-                dir: '%kernel.project_dir%/src/Entity'
-                prefix: 'App\Entity'
-                alias: App

@@ -1,7 +1,7 @@
 security:
     # https://symfony.com/doc/current/security.html#c-hashing-passwords
     password_hashers:
-        App\Context\Common\Domain\Entity\User: 'auto'
+        App\Users\Domain\Entity\User: 'auto'
 
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     enable_authenticator_manager: true
@@ -11,7 +11,7 @@ security:
         # used to reload user from session & other features (e.g. switch_user)
         app_user_provider:
             entity:
-                class: App\Context\Common\Domain\Entity\User
+                class: App\Users\Domain\Entity\User
                 property: email
     firewalls:
         dev:
@@ -57,4 +57,4 @@ security:
         - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         # - { path: ^/api, roles: PUBLIC_ACCESS }
-        - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

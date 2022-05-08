@@ -1,0 +1,21 @@
+{# @users.emails/signup.html.twig #}
+
+{% set siteHost = 'uelon.uz' %}
+{% set siteLink %}
+    <a href='https://{{ siteHost }}'>{{ siteHost }}</a>
+{% endset %}
+{% set activationUrl = 'https://' ~ siteHost ~ '/users/0/activate' %}
+
+<h1>Добро пожаловать на портал объявлений {{ siteLink }}</h1>
+
+<p>Вы получили это сообщение потому что зарегиcтрировались на сайте {{ siteLink }}</p>
+<p>Ваш регистрационный почтовый адрес {{ email }}</p>
+<p>
+    <a href='{{ activationUrl }}'>
+        Перейдите по этой ссылке чтобы активировать Вашу учетную запсь
+    </a> на сайте {{ siteLink }} (ссылка активна до {{ expireTime|date('F jS') }})
+</p>
+
+<p>
+    Если Вы получили это сообщение случайно, не отвечайте и удалите ее.
+</p>
