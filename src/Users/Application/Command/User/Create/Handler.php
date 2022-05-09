@@ -3,6 +3,7 @@ namespace App\Users\Application\Command\User\Create;
 
 use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Entity\EntityIDInterface;
+use App\Shared\Domain\Event\EventBusInterface;
 use App\Shared\Domain\Event\EventDispatcherInterface;
 use App\Users\Domain\Event\UserCreatedDomainEvent;
 use App\Users\Domain\Event\UserCreateDomainEvent;
@@ -13,9 +14,9 @@ use DomainException;
 class Handler implements CommandHandlerInterface
 {
     public function __construct(
-        private UserRepositoryInterface $_repository,
-        private EventDispatcherInterface $_eventDispatcher,
-        private UserFactory $_userFactory,
+        private readonly UserRepositoryInterface $_repository,
+        private readonly EventBusInterface $_eventBus,
+        private readonly UserFactory $_userFactory,
     )
     {}
 
@@ -28,19 +29,11 @@ class Handler implements CommandHandlerInterface
             status: $command->status,
             plainPassword: $command->password,
         );
-
-        // if ($command->sendNotification) {
-        //     $this->_eventDispatcher->dispatch(new UserCreateDomainEvent($user));
-        // }
         
-        try {
-            $this->_repository->save($user, true);
-        } catch (\Throwable $th) {
-            throw new DomainException("Cannot save a user entity in database.");
-        }
+        $this->_repository->save($user, true);
         
         if ($command->sendNotification) {
-            $this->_eventDispatcher->dispatch(new UserCreatedDomainEvent($user));
+            $this->_eventBus->handle(new UserCreatedDomainEvent($user));
         }
 
         return $user;

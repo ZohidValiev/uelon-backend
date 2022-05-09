@@ -1,13 +1,11 @@
 <?php
 namespace App\Users\Domain\Event;
 
-use App\Shared\Domain\Event\DomainEvent;
+use App\Shared\Domain\Event\EventInterface;
 use App\Users\Domain\Entity\User;
 
-class UserCreatedDomainEvent extends DomainEvent
+class UserCreatedDomainEvent implements EventInterface
 {   
-    public function __construct(User $user)
-    {
-        parent::__construct(UserEvents::EVENT_USER_CREATED, $user);
-    }
+    public function __construct(public readonly User $user)
+    {}
 }

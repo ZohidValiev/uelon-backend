@@ -58,6 +58,10 @@ services:
         App\Shared\Application\Query\QueryHandlerInterface:
             tags:
                 - { name: messenger.message_handler, bus: query.bus }
+        
+        App\Shared\Domain\EventHandlerInterface:
+            tags:
+                - { name: messenger.message_handler, bus: event.bus }
 
     App\Shared\Domain\Event\EventDispatcherInterface:
         class: App\Shared\Infostructure\Service\EventDispatcher

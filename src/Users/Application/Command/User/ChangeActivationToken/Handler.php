@@ -2,6 +2,7 @@
 namespace App\Users\Application\Command\User\ChangeActivationToken;
 
 use App\Shared\Domain\Entity\EntityIDInterface;
+use App\Shared\Domain\Event\EventBusInterface;
 use App\Shared\Domain\Event\EventDispatcherInterface;
 use App\Shared\Domain\Exception\NotFoundDomainException;
 use App\Users\Domain\Entity\User;
@@ -12,8 +13,8 @@ use App\Users\Domain\Service\EntityManagerInterface;
 final class Handler
 {
     public function __construct(
-        private UserRepositoryInterface $repository,
-        private EventDispatcherInterface $eventDispatcher,
+        private readonly UserRepositoryInterface $_repository,
+        private readonly EventBusInterface $_eventBus,
     )
     {}
 
@@ -22,10 +23,10 @@ final class Handler
      */
     public function __invoke(Command $command): EntityIDInterface
     {
-        $user = $this->repository->getByEmail($command->getEmail());
+        $user = $this->_repository->getByEmail($command->getEmail());
         $user->generateActivationToken();
 
-        $this->eventDispatcher->dispatch(new ActivationTokenChangedDomainEvent($user));
+        $this->_eventBus->handle(new ActivationTokenChangedDomainEvent($user));
 
         return $user;
     }

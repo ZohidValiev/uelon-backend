@@ -1,5 +1,5 @@
 <?php
-namespace App\Shared\Application\Event;
+namespace App\Shared\Domain\Event;
 
 
 interface EventHandlerInterface

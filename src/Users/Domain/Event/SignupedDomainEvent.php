@@ -1,13 +1,32 @@
 <?php
 namespace App\Users\Domain\Event;
 
-use App\Shared\Domain\Event\DomainEvent;
+use App\Shared\Domain\Event\EventInterface;
 use App\Users\Domain\Entity\User;
+use DateTimeImmutable;
 
-class SignupedDomainEvent extends DomainEvent
+class SignupedDomainEvent implements EventInterface
 {
-    public function __construct(User $target)
+    public function __construct(private readonly User $_user)
+    {}
+
+    public function getEmail(): string
     {
-        parent::__construct(UserEvents::EVENT_USER_SIGNUPED, $target);
+        return $this->_user->getEmail();
+    }
+
+    public function getNickname(): string
+    {
+        return $this->_user->getNickname();
+    }
+
+    public function getToken(): string
+    {
+        return $this->_user->getActivationToken()->getValue();
+    }
+
+    public function getTokenExpireTime(): DateTimeImmutable
+    {
+        return $this->_user->getActivationToken()->getExpireTime();
     }
 }

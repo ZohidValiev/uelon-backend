@@ -2,6 +2,7 @@
 namespace App\Users\Application\Command\User\Signup;
 
 use App\Shared\Application\Command\CommandHandlerInterface;
+use App\Shared\Domain\Event\EventBusInterface;
 use App\Shared\Domain\Event\EventDispatcherInterface;
 use App\Users\Domain\Entity\UserEmail;
 use App\Users\Domain\Event\SignupDomainEvent;
@@ -13,7 +14,7 @@ class Handler implements CommandHandlerInterface
 {
     public function __construct(
         private UserRepositoryInterface $_repository,
-        private EventDispatcherInterface $_eventDispatcher,
+        private EventBusInterface $_eventBus,
         private UserFactory $_userFactory,
     )
     {}
@@ -25,11 +26,9 @@ class Handler implements CommandHandlerInterface
             plainPassword: $command->password,
         );
 
-        $this->_eventDispatcher->dispatch(new SignupDomainEvent($user));
-
         $this->_repository->save($user, true);
         
-        $this->_eventDispatcher->dispatch(new SignupedDomainEvent($user));
+        $this->_eventBus->handle(new SignupedDomainEvent($user));
 
         return $user->getId();
     }
