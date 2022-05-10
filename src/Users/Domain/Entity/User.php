@@ -187,7 +187,7 @@ class User implements EntityIDInterface, AuthUserInterface
     /**
      * @ORM\Column(type="token", nullable=true)
      */
-    private ?Token $activationToken;
+    private ?Token $activationToken = null;
 
     /**
      * @ORM\Column(type="integer")
