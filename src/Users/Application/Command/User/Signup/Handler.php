@@ -5,7 +5,7 @@ use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Entity\EntityIDInterface;
 use App\Shared\Domain\Event\EventBusInterface;
 use App\Users\Domain\Entity\UserEmail;
-use App\Users\Domain\Event\SignupedDomainEvent;
+use App\Users\Domain\Event\UserSignupedDomainEvent;
 use App\Users\Domain\Factory\UserFactory;
 use App\Users\Domain\Repository\UserRepositoryInterface;
 
@@ -27,7 +27,12 @@ class Handler implements CommandHandlerInterface
 
         $this->_repository->save($user, true);
         
-        $this->_eventBus->handle(new SignupedDomainEvent($user));
+        $this->_eventBus->handle(new UserSignupedDomainEvent(
+            $user->getEmail(),
+            $user->getNickname(),
+            $user->getActivationToken()->getValue(),
+            $user->getActivationToken()->getExpireTime(),
+        ));
 
         return $user;
     }

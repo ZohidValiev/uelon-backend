@@ -2,13 +2,13 @@
 namespace App\Users\Infostructure\EventHandler;
 
 use App\Shared\Domain\Event\EventHandlerInterface;
-use App\Users\Domain\Event\SignupedDomainEvent;
+use App\Users\Domain\Event\UserSignupedDomainEvent;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Throwable;
 
-class SignupSendEmailHandler implements EventHandlerInterface
+class UserSignupedEmailNotificationHandler implements EventHandlerInterface
 {
     public function __construct(
         private MailerInterface $_mailer,
@@ -17,13 +17,13 @@ class SignupSendEmailHandler implements EventHandlerInterface
     )
     {}
 
-    public function __invoke(SignupedDomainEvent $event): void
+    public function __invoke(UserSignupedDomainEvent $event): void
     {
         $email = (new TemplatedEmail())
             ->subject('Активация аккаунта на uelon.uz')
             ->sender($this->noreplyEmail)
             ->from($this->noreplyEmail)
-            ->to($event->getEmail())
+            ->to($event->email)
             ->htmlTemplate('@users.email/signup.html.twig')
             ->context([
                 "event" => $event,
@@ -32,7 +32,7 @@ class SignupSendEmailHandler implements EventHandlerInterface
         try {
             $this->_mailer->send($email);
         } catch (Throwable $e) {
-            $this->_logger->error("A signup message sending exception for email = {$event->getEmail()}.");
+            $this->_logger->error("A signup message sending exception for email = {$event->email}.");
         }
     }
 }
